@@ -1,0 +1,56 @@
+--- @meta _
+
+--- @class IUIGraphicsBackend
+local graphics = {}
+
+--- @param width number
+--- @param height number
+function graphics.beginDraw(width, height)
+end
+
+function graphics.endDraw()
+end
+
+function graphics.newFont(size, hinting, dpiscale)
+end
+
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+function graphics.clip(x, y, w, h)
+end
+
+function graphics.clip()
+end
+
+--- @param r number
+--- @param g number
+--- @param b number
+--- @param a? number
+function graphics.setColor(r, g, b, a)
+end
+
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+--- @param rx? number
+--- @param ry? number
+function graphics.rectangle(x, y, w, h, rx, ry)
+end
+
+--- @param x number
+--- @param y number
+--- @param r number
+function graphics.circle(x, y, r)
+end
+
+function graphics.setFont(f)
+end
+
+--- @param s string
+--- @param x number
+--- @param y number
+function graphics.print(s, x, y)
+end

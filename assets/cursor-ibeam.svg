@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>cursor-ibeam</title>
+    <g id="cursor-ibeam" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M15,8 C15,7.33333333 15.3333333,7 16,7 C16.6666667,7 17,7.33333333 17,8 L17,24 C17,24.6666667 16.6666667,25 16,25 C15.3333333,25 15,24.6666667 15,24 L15,8 Z" id="Path" fill="#E8E8EB"></path>
+    </g>
+</svg>
