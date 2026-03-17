@@ -14,6 +14,10 @@ end
 function graphics.newFont(size, hinting, dpiscale)
 end
 
+--- @return number w, number h
+function graphics.getImageDimensions(image)
+end
+
 --- @param x number
 --- @param y number
 --- @param w number
@@ -53,4 +57,12 @@ end
 --- @param x number
 --- @param y number
 function graphics.print(s, x, y)
+end
+
+--- @param image any
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+function graphics.image(image, x, y, w, h)
 end
