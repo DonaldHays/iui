@@ -5,6 +5,7 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 local iui = require(parentPath .. "iui")
 
 --- @alias IUISplitViewDirection "horiz" | "vert"
+--- @alias IUISplitViewSide "min" | "max"
 
 --- @param name string
 --- @param direction IUISplitViewDirection
@@ -23,6 +24,11 @@ function iui.splitView(name, direction, current, first, second)
     local spacing = iui.style["spacing"]
     local splitMinEdge = iui.style["splitMinEdge"] or 8
     local splitMaxEdge = iui.style["splitMaxEdge"] or 8
+    local splitSide = iui.style["splitSide"] or "min" --- @type IUISplitViewSide
+
+    if splitSide == "max" then
+        current = w - current
+    end
 
     local handleWidth = math.ceil(spacing * 0.75)
     local handleMin = current - handleWidth
@@ -96,12 +102,13 @@ function iui.splitView(name, direction, current, first, second)
 
     iui.panelBackground()
 
+    local pos = current
     iui.draw(function()
         iui.colors.sysGray0:set()
         if direction == "horiz" then
-            iui.graphics.rectangle(x + current, y, 1, h)
+            iui.graphics.rectangle(x + pos, y, 1, h)
         elseif direction == "vert" then
-            iui.graphics.rectangle(x, y + current, w, 1)
+            iui.graphics.rectangle(x, y + pos, w, 1)
         end
     end)
 
@@ -124,5 +131,10 @@ function iui.splitView(name, direction, current, first, second)
     end
 
     iui.endID()
+
+    if splitSide == "max" then
+        current = w - current
+    end
+
     return current
 end
