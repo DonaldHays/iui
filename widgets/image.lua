@@ -4,6 +4,8 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 --- @class IUILib
 local iui = require(parentPath .. "iui")
 
+--- @alias IUIImageMode "fill" | "aspectFit" | "aspectFill" | "center"
+
 --- @param image any
 function iui.image(image)
     local bx, by, bw, bh = iui.layout.getBounds()
@@ -14,7 +16,11 @@ function iui.image(image)
 
     local ox, oy, ow, oh = bx, by, bw, bh
 
-    if true then
+    local mode = iui.style["imageMode"] or "aspectFit" --- @type IUIImageMode
+
+    if mode == "fill" then
+        -- No changes necessary
+    elseif mode == "aspectFit" then
         if aspectImage > aspectBounds then
             ox = bx
             ow = bw
@@ -26,6 +32,22 @@ function iui.image(image)
             ow = iui.utils.round(oh * aspectImage)
             ox = bx + iui.utils.round((bw - ow) / 2)
         end
+    elseif mode == "aspectFill" then
+        if aspectImage < aspectBounds then
+            ox = bx
+            ow = bw
+            oh = iui.utils.round(ow / aspectImage)
+            oy = by + iui.utils.round((bh - oh) / 2)
+        else
+            oy = by
+            oh = bh
+            ow = iui.utils.round(oh * aspectImage)
+            ox = bx + iui.utils.round((bw - ow) / 2)
+        end
+    elseif mode == "center" then
+        ow, oh = iw, ih
+        ox = bx + iui.utils.round((bw - ow) / 2)
+        oy = by + iui.utils.round((bh - oh) / 2)
     end
 
     iui.draw(function()
