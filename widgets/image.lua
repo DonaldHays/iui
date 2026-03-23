@@ -16,8 +16,9 @@ function iui.image(image)
 
     local ox, oy, ow, oh = bx, by, bw, bh
 
-    local mode = iui.style["imageMode"] or "aspectFit" --- @type IUIImageMode
-    local clip = iui.style["imageClip"] or false       --- @type boolean
+    local filter = iui.style["imageFilter"] or "linear" --- @type IUIImageFilter
+    local mode = iui.style["imageMode"] or "aspectFit"  --- @type IUIImageMode
+    local clip = iui.style["imageClip"] or false        --- @type boolean
 
     if mode == "fill" then
         -- No changes necessary
@@ -60,7 +61,7 @@ function iui.image(image)
         iui.graphics.rectangle(bx, by, bw, bh)
 
         iui.graphics.setColor(1, 1, 1)
-        iui.graphics.image(image, ox, oy, ow, oh)
+        iui.graphics.image(image, filter, ox, oy, ow, oh)
     end)
 
     if clip then

@@ -1,5 +1,7 @@
 --- @meta _
 
+--- @alias IUIImageFilter "nearest" | "smooth" | "linear"
+
 --- @class IUIGraphicsBackend
 local graphics = {}
 
@@ -60,9 +62,10 @@ function graphics.print(s, x, y)
 end
 
 --- @param image any
+--- @param filter IUIImageFilter
 --- @param x number
 --- @param y number
 --- @param w number
 --- @param h number
-function graphics.image(image, x, y, w, h)
+function graphics.image(image, filter, x, y, w, h)
 end
