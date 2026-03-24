@@ -16,5 +16,9 @@ end
 function system.setCursor(cursor)
 end
 
+--- @return number dpi
+function system.getDPI()
+end
+
 function system.quit()
 end

@@ -6,3 +6,4 @@
 --- @class IUIConfig
 --- @field idiom? IUIIdiom
 --- @field detail? IUIDetail
+--- @field dpi? number

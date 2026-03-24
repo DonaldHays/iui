@@ -19,7 +19,7 @@ local stack = {
 }
 
 function style.load()
-    style.default.font = iui.graphics.newFont(12, "normal", 1)
+    style.default.font = iui.graphics.newFont(12, "normal", iui.dpi)
 end
 
 function style.beginFrame()

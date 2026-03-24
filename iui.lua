@@ -52,6 +52,7 @@ function iui.load(backend, config)
 
     iui.idiom = config.idiom or error("No idiom specified")
     iui.detail = config.detail or error("No detail specified")
+    iui.dpi = config.dpi or backend.system.getDPI()
 
     iui.backend = backend
     iui.graphics = backend.graphics
