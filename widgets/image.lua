@@ -57,9 +57,6 @@ function iui.image(image)
     end
 
     iui.draw(function()
-        iui.colors.sysGray0:set()
-        iui.graphics.rectangle(bx, by, bw, bh)
-
         iui.graphics.setColor(1, 1, 1)
         iui.graphics.image(image, filter, ox, oy, ow, oh)
     end)

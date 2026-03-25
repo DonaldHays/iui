@@ -2,6 +2,13 @@
 
 --- @alias IUIImageFilter "nearest" | "smooth" | "linear"
 
+--- @class IUIImage9Slice
+--- @field image any
+--- @field l number
+--- @field t number
+--- @field r number
+--- @field b number
+
 --- @class IUIGraphicsBackend
 local graphics = {}
 
@@ -68,4 +75,13 @@ end
 --- @param w number
 --- @param h number
 function graphics.image(image, filter, x, y, w, h)
+end
+
+--- @param nineSlice IUIImage9Slice
+--- @param filter IUIImageFilter
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+function graphics.nineSlice(nineSlice, filter, x, y, w, h)
 end
