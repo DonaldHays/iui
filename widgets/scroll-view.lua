@@ -81,7 +81,7 @@ function iui.scrollView(name, content, manager)
     iui.draw.popClip()
 
     panel = iui.layout.beginPanel(scrollX, scrollY, scrollW, scrollH, 0)
-    iui.layout.beginRow({ kind = "fixed", size = scrollW }, scrollH)
+    iui.layout.fillPanel()
     manager.y = iui.scrollBar("scroll", "vert", manager.y, innerH, 0, ch)
     iui.layout.endPanel()
     iui.layout.endZStack()

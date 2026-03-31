@@ -189,6 +189,20 @@ function layout.beginRow(columns, rowHeight)
     panel.columnBoundsCache = nil
 end
 
+--- Begins a row that causes the next widget to fill the remainder of the
+--- current panel.
+function layout.fillPanel()
+    local panel = layout.getPanel()
+
+    if panel.columnIndex ~= 1 then
+        panel.columnIndex = 1
+        panel.rowY = panel.rowY + panel.rowHeight + iui.style["spacing"]
+    end
+
+    local h = panel.h - (panel.rowY + panel.margin)
+    layout.beginRow({ kind = "dynamic", count = 1 }, h)
+end
+
 function layout.beginZStack()
     local panel = layout.getPanel()
     panel.zStackCount = (panel.zStackCount or 0) + 1
