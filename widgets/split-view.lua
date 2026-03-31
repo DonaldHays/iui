@@ -86,6 +86,8 @@ function iui.splitView(name, direction, current, first, second)
         end
     end
 
+    current = iui.utils.round(current)
+
     if current < splitMinEdge then
         current = splitMinEdge
     end
