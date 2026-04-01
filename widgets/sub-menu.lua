@@ -22,9 +22,17 @@ local iui = require(parentPath .. "iui")
 --- @type IUISubMenuStackItem[]
 local subMenuStack = {}
 
+local disclosureImage
+
 --- @param name string
 --- @return boolean isOpen
 function iui.subMenu(name)
+    if disclosureImage == nil then
+        disclosureImage = iui.backend.system.getMSDFImage(
+            "assets/glyph-disclosure.png"
+        )
+    end
+
     local id = iui.beginID(name, false)
     local state = iui.state(id)
 
@@ -32,6 +40,7 @@ function iui.subMenu(name)
 
     local font = iui.style["font"]
     local padding = iui.style["padding"]
+    local spacing = iui.style["menuItemSpacing"]
 
     --- @type IUISubMenuController
     local controller = iui.style["subMenuController"]
@@ -39,9 +48,16 @@ function iui.subMenu(name)
 
     local textW = math.ceil(font:getWidth(name))
     local textH = math.ceil(font:getHeight())
+    local discSize = textH - 2
 
     if intrinsicW then
-        iui.layout.setIntrinsicWidth(textW + padding * 2)
+        if isPanelSubMenu then
+            iui.layout.setIntrinsicWidth(
+                textW + padding * 2 + spacing + discSize
+            )
+        else
+            iui.layout.setIntrinsicWidth(textW + padding * 2)
+        end
     end
 
     if intrinsicH then
@@ -112,8 +128,9 @@ function iui.subMenu(name)
         local textY = y + iui.utils.round((h - textH) / 2)
         if isPanelSubMenu then
             textX = x + padding
-            -- TODO: Measure arrow
-            iui.graphics.print(">", x + w - padding - 8, textY)
+            iui.graphics.msdfImage(
+                disclosureImage, x + w - padding - discSize, textY, discSize, discSize
+            )
         else
             textX = x + iui.utils.round((w - textW) / 2)
         end
