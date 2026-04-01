@@ -4,10 +4,18 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 --- @class IUILib
 local iui = require(parentPath .. "iui")
 
+local checkmarkImage
+
 --- @param name string
 --- @param checked boolean
 --- @return boolean
 function iui.checkbox(name, checked)
+    if checkmarkImage == nil then
+        checkmarkImage = iui.backend.system.getMSDFImage(
+            "assets/glyph-checkmark.png"
+        )
+    end
+
     local id = iui.beginID(name)
 
     local intrinsicW, intrinsicH = iui.layout.getWantsIntrinsic()
@@ -93,7 +101,9 @@ function iui.checkbox(name, checked)
                 iui.colors.sysGray300:set()
             end
 
-            iui.graphics.rectangle(x + 3, boxY + 3, size - 6, size - 6, 1, 1)
+            iui.graphics.msdfImage(
+                checkmarkImage, x + 2, boxY + 2, size - 4, size - 4
+            )
         end
 
         -- Label

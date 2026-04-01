@@ -16,6 +16,10 @@ end
 function system.setCursor(cursor)
 end
 
+--- @param name string
+function system.getMSDFImage(name)
+end
+
 --- @return number dpi
 function system.getDPI()
 end
