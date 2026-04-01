@@ -77,6 +77,14 @@ end
 function graphics.image(image, filter, x, y, w, h)
 end
 
+--- @param image any
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+function graphics.msdfImage(image, x, y, w, h)
+end
+
 --- @param nineSlice IUIImage9Slice
 --- @param filter IUIImageFilter
 --- @param x number
