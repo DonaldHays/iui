@@ -93,3 +93,11 @@ end
 --- @param h number
 function graphics.nineSlice(nineSlice, filter, x, y, w, h)
 end
+
+--- @param nineSlice IUIImage9Slice
+--- @param x number
+--- @param y number
+--- @param w number
+--- @param h number
+function graphics.msdfNineSlice(nineSlice, x, y, w, h)
+end

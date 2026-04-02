@@ -40,4 +40,6 @@ iui.colors = {
     sysGray900 = iui.newColor(232 / 255, 232 / 255, 235 / 255),
     sysGray950 = iui.newColor(243 / 255, 243 / 255, 245 / 255),
     sysGray1000 = iui.newColor(252 / 255, 252 / 255, 254 / 255),
+
+    white = iui.newColor(1, 1, 1)
 }

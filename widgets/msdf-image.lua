@@ -7,7 +7,7 @@ local iui = require(parentPath .. "iui")
 --- @param image any
 --- @param color? IUIColor
 function iui.msdfImage(image, color)
-    color = color or iui.colors.sysGray1000
+    color = color or iui.colors.white
 
     local bx, by, bw, bh = iui.layout.getBounds()
     local iw, ih = iui.graphics.getImageDimensions(image)
