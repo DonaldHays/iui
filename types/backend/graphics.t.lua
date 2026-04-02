@@ -9,6 +9,12 @@
 --- @field r number
 --- @field b number
 
+--- @class IUILayeredImageItem
+--- @field image any
+--- @field color IUIColor
+
+--- @alias IUILayeredImage IUILayeredImageItem[]
+
 --- @class IUIGraphicsBackend
 local graphics = {}
 
