@@ -128,8 +128,9 @@ function iui.subMenu(name)
         local textY = y + iui.utils.round((h - textH) / 2)
         if isPanelSubMenu then
             textX = x + padding
+            local discY = y + iui.utils.round((h - discSize) / 2)
             iui.graphics.msdfImage(
-                disclosureImage, x + w - padding - discSize, textY, discSize, discSize
+                disclosureImage, x + w - padding - discSize, discY, discSize, discSize
             )
         else
             textX = x + iui.utils.round((w - textW) / 2)
