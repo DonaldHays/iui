@@ -9,6 +9,9 @@
 --- @field hoverID? number The ID of the widget a pointer is hovering over.
 --- @field activeID? number The ID of the widget that's being actively used.
 --- @field cursor? IUICursorName The desired mouse cursor to display.
+--- @field hadActiveID boolean Internal flag for detecting widget deactivation.
+--- @field widgetActivated? fun() A callback when a widget becomes active.
+--- @field widgetDeactivated? fun() A callback when a widget resigns active.
 local iui = {}
 
 --- @type IUICursorName?
@@ -24,6 +27,7 @@ local rootKeys = {
     disabledCount = true,
     hoverID = true,
     activeID = true,
+    hadActiveID = true,
     cursor = true
 }
 

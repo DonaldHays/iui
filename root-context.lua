@@ -12,6 +12,7 @@ local iui = require(currentPath .. "iui")
 --- @field hoverID? number The ID of the widget a pointer is hovering over.
 --- @field activeID? number The ID of the widget that's being actively used.
 --- @field cursor? IUICursorName The desired mouse cursor to display.
+--- @field hadActiveID boolean Internal flag for detecting widget deactivation.
 local IUIRootContext = {}
 IUIRootContext.__index = IUIRootContext
 
@@ -24,6 +25,7 @@ function iui.newRootContext()
         layer = iui.layer.newRootContext(),
         state = iui.state.newRootContext(),
         disabledCount = 0,
+        hadActiveID = false,
     }
     setmetatable(context, IUIRootContext)
 
@@ -46,6 +48,14 @@ end
 function IUIRootContext:endFrame()
     if iui.disabledCount ~= 0 then
         error("Unbalanced control disable count")
+    end
+
+    if self.activeID == nil and self.hadActiveID == true then
+        self.hadActiveID = false
+
+        if iui.widgetDeactivated then
+            iui.widgetDeactivated()
+        end
     end
 
     iui.input.endFrame()

@@ -133,7 +133,7 @@ function iui.scrollView(name, content, manager)
                 if math.abs(dy) > 15 then
                     state.dragOrigin = nil
                     state.isDragging = true
-                    iui.activeID = id
+                    iui.becomeActive(id)
                 end
             end
         end

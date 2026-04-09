@@ -106,9 +106,20 @@ function iui.becomeHover()
     end
 end
 
-function iui.becomeActive()
+--- @param id? number
+function iui.becomeActive(id)
     if not iui.isDisabled() then
-        iui.activeID = stack[#stack]
+        if iui.activeID and iui.widgetDeactivated then
+            iui.widgetDeactivated()
+        end
+
+        id = id or stack[#stack]
+        iui.activeID = id
+        iui.hadActiveID = true
+
+        if iui.widgetActivated then
+            iui.widgetActivated()
+        end
     end
 end
 
