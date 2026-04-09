@@ -27,19 +27,19 @@ end
 iui.colors = {
     sysAccent500 = iui.newColor(14 / 255, 59 / 255, 173 / 255),
 
-    sysGray0 = iui.newColor(5 / 255, 5 / 255, 6 / 255),
-    sysGray50 = iui.newColor(20 / 255, 20 / 255, 24 / 255),
-    sysGray100 = iui.newColor(28 / 255, 28 / 255, 33 / 255),
-    sysGray200 = iui.newColor(58 / 255, 58 / 255, 67 / 255),
-    sysGray300 = iui.newColor(88 / 255, 88 / 255, 102 / 255),
-    sysGray400 = iui.newColor(113 / 255, 113 / 255, 130 / 255),
-    sysGray500 = iui.newColor(128 / 255, 128 / 255, 146 / 255),
-    sysGray600 = iui.newColor(149 / 255, 149 / 255, 164 / 255),
-    sysGray700 = iui.newColor(176 / 255, 176 / 255, 187 / 255),
-    sysGray800 = iui.newColor(205 / 255, 205 / 255, 212 / 255),
-    sysGray900 = iui.newColor(232 / 255, 232 / 255, 235 / 255),
-    sysGray950 = iui.newColor(243 / 255, 243 / 255, 245 / 255),
-    sysGray1000 = iui.newColor(252 / 255, 252 / 255, 254 / 255),
+    sysGray0 = iui.newColor(0.014, 0.014, 0.016),
+    sysGray50 = iui.newColor(0.083, 0.083, 0.097),
+    sysGray100 = iui.newColor(0.13, 0.13, 0.15),
+    sysGray200 = iui.newColor(0.28, 0.28, 0.32),
+    sysGray300 = iui.newColor(0.403, 0.403, 0.457),
+    sysGray400 = iui.newColor(0.47, 0.47, 0.53),
+    sysGray500 = iui.newColor(0.543, 0.543, 0.597),
+    sysGray600 = iui.newColor(0.628, 0.628, 0.672),
+    sysGray700 = iui.newColor(0.723, 0.723, 0.757),
+    sysGray800 = iui.newColor(0.818, 0.818, 0.842),
+    sysGray900 = iui.newColor(0.914, 0.914, 0.926),
+    sysGray950 = iui.newColor(0.957, 0.957, 0.963),
+    sysGray1000 = iui.newColor(0.989, 0.989, 0.991),
 
     white = iui.newColor(1, 1, 1)
 }
