@@ -19,6 +19,8 @@ function ScrollManager:fixOffset()
     self.y = math.max(math.min(self.y, self.contentHeight - self.clipHeight), 0)
 end
 
+iui.ScrollManager = ScrollManager
+
 --- @return IUIScrollManager
 function iui.newScrollManager()
     --- @type IUIScrollManager
