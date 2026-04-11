@@ -15,6 +15,9 @@ local ScrollManager = {}
 ScrollManager.__index = ScrollManager
 
 function ScrollManager:fixOffset()
+    self.x = iui.utils.round(self.x)
+    self.y = iui.utils.round(self.y)
+
     self.x = math.max(math.min(self.x, self.contentWidth - self.clipWidth), 0)
     self.y = math.max(math.min(self.y, self.contentHeight - self.clipHeight), 0)
 end
