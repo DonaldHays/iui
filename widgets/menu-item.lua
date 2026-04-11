@@ -43,7 +43,7 @@ function iui.menuItem(name, command)
         iui.becomeHover()
     end
 
-    if iui.input.mouse.released[1] then
+    if iui.input.mouse.released:has(1) then
         if iui.hoverID == id then
             pressed = true
             --- @type IUISubMenuController

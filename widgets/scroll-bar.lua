@@ -31,7 +31,7 @@ function iui.scrollBar(name, dir, value, length, min, max)
             iui.becomeHover()
         end
 
-        if iui.hoverID == id and iui.input.mouse.pressed[1] then
+        if iui.hoverID == id and iui.input.mouse.pressed:has(1) then
             iui.becomeActive()
 
             if (mousePos < value) or (mousePos >= (value + length)) then
@@ -45,7 +45,7 @@ function iui.scrollBar(name, dir, value, length, min, max)
     if iui.activeID == id then
         value = math.min(math.max(mousePos - state.offset, min), max - length)
 
-        if not iui.input.mouse.down[1] then
+        if not iui.input.mouse.down:has(1) then
             iui.activeID = nil
         end
     end

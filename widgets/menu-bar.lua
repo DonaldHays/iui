@@ -115,8 +115,8 @@ function iui.menuBar(items, content)
     end
 
     if isShowingPanel then
-        if iui.input.mouse.pressed[1] and not controller.panelClaimedMouseDown then
-            iui.input.mouse.pressed[1] = nil
+        if iui.input.mouse.pressed:has(1) and not controller.panelClaimedMouseDown then
+            iui.input.mouse.pressed:remove(1)
             controller.deactivate()
         end
 

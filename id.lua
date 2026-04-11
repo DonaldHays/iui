@@ -10,11 +10,11 @@ local cacheMetatable = { __mode = "k" }
 --- @type number[]
 local stack = {}
 
---- @type table<number, true>
-local check = {}
+--- @type IUISet<number>
+local check = iui.set.new()
 
 function iui.resetIDCheck()
-    check = {}
+    check:removeAll()
 end
 
 --- @param name string
@@ -52,10 +52,10 @@ function iui.beginID(name, canFocus)
         ids[name] = hash
     end
 
-    if check[hash] then
+    if check:has(hash) then
         print("Warning: duplicate hash for " .. name)
     else
-        check[hash] = true
+        check:put(hash)
     end
 
     -- Push the hash onto the stack.
@@ -67,7 +67,7 @@ function iui.beginID(name, canFocus)
     end
 
     if iui.layer.getFocusID() == hash and iui.input.keyboard.pressed["tab"] then
-        if iui.input.keyboard.down["lshift"] then
+        if iui.input.keyboard.down:has("lshift") then
             iui.layer.setFocusID(iui.layer.getLastID())
         else
             iui.layer.setFocusID(nil)

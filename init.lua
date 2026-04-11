@@ -7,6 +7,7 @@ local iui = require(currentPath .. "iui")
 iui.resourcePath = resourcePath
 
 require(currentPath .. "utils")
+require(currentPath .. "set")
 require(currentPath .. "root-context")
 require(currentPath .. "color")
 require(currentPath .. "input")

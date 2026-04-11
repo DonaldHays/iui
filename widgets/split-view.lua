@@ -42,7 +42,7 @@ function iui.splitView(name, direction, current, first, second)
         end
 
         if iui.hoverID == id then
-            if iui.input.mouse.pressed[1] then
+            if iui.input.mouse.pressed:has(1) then
                 iui.becomeActive()
                 state.offset = (mx - x) - current
             end
@@ -51,7 +51,7 @@ function iui.splitView(name, direction, current, first, second)
         if iui.activeID == id then
             current = (mx - x) - state.offset
 
-            if not iui.input.mouse.down[1] then
+            if not iui.input.mouse.down:has(1) then
                 iui.activeID = nil
             end
         end
@@ -67,7 +67,7 @@ function iui.splitView(name, direction, current, first, second)
         end
 
         if iui.hoverID == id then
-            if iui.input.mouse.pressed[1] then
+            if iui.input.mouse.pressed:has(1) then
                 iui.becomeActive()
                 state.offset = (mx - x) - current
             end
@@ -76,7 +76,7 @@ function iui.splitView(name, direction, current, first, second)
         if iui.activeID == id then
             current = (my - y) - state.offset
 
-            if not iui.input.mouse.down[1] then
+            if not iui.input.mouse.down:has(1) then
                 iui.activeID = nil
             end
         end

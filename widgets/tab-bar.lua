@@ -62,7 +62,7 @@ function iui.tabItem(name, current, value)
         iui.becomeHover()
     end
 
-    if iui.hoverID == id and iui.input.mouse.pressed[1] then
+    if iui.hoverID == id and iui.input.mouse.pressed:has(1) then
         out = value
         iui.becomeFocus()
     end

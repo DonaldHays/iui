@@ -17,9 +17,9 @@ local iui = require(parentPath .. "iui")
 --- @field dy number
 --- @field scrollX number
 --- @field scrollY number
---- @field down table<number, true>
---- @field pressed table<number, true>
---- @field released table<number, true>
+--- @field down IUISet<number>
+--- @field pressed IUISet<number>
+--- @field released IUISet<number>
 
 --- @class (exact) IUIMouseRootContext
 --- @field velocityBuffer IUIMouseVelocityEntry[]
@@ -57,9 +57,9 @@ local function makeMouseState()
         dy = 0,
         scrollX = 0,
         scrollY = 0,
-        down = {},
-        pressed = {},
-        released = {}
+        down = iui.set.new(),
+        pressed = iui.set.new(),
+        released = iui.set.new()
     }
 end
 
@@ -82,13 +82,13 @@ local mouse = {
         elseif event == "down" then
             storage.x = x
             storage.y = y
-            storage.down[button] = true
-            storage.pressed[button] = true
+            storage.down:put(button)
+            storage.pressed:put(button)
         elseif event == "up" then
             storage.x = x
             storage.y = y
-            storage.down[button] = nil
-            storage.released[button] = true
+            storage.down:remove(button)
+            storage.released:put(button)
         elseif event == "scroll" then
             storage.scrollX = storage.scrollX + dx
             storage.scrollY = storage.scrollY + dy
@@ -121,8 +121,8 @@ function mouse.endFrame()
     storage.dy = 0
     storage.scrollX = 0
     storage.scrollY = 0
-    storage.pressed = {}
-    storage.released = {}
+    storage.pressed:removeAll()
+    storage.released:removeAll()
 end
 
 function mouse.resetVelocity()

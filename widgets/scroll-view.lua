@@ -101,13 +101,13 @@ function iui.scrollView(name, content, manager)
     if not disabled then
         if containsMouse then
             local scrollIncrement = iui.input.mouse.scrollY * 21
-            if iui.input.keyboard.down["lalt"] then
+            if iui.input.keyboard.down:has("lalt") then
                 scrollIncrement = scrollIncrement * 5
             end
             manager.y = manager.y - scrollIncrement
 
             -- Set up a potential drag event
-            if iui.input.mouse.pressed[1] then
+            if iui.input.mouse.pressed:has(1) then
                 -- Terminate any scrolling
                 state.vy = 0
 
@@ -127,7 +127,7 @@ function iui.scrollView(name, content, manager)
         end
 
         if state.dragOrigin then
-            if not iui.input.mouse.down[1] then
+            if not iui.input.mouse.down:has(1) then
                 state.dragOrigin = nil
             else
                 -- local dx = mx - state.dragOrigin.x
@@ -141,7 +141,7 @@ function iui.scrollView(name, content, manager)
         end
 
         if state.isDragging then
-            if not iui.input.mouse.down[1] then
+            if not iui.input.mouse.down:has(1) then
                 state.isDragging = false
                 iui.activeID = nil
                 -- state.vy = -iui.input.mouse.dy / iui.dt

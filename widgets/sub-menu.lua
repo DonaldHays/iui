@@ -71,13 +71,13 @@ function iui.subMenu(name)
     local isShowingPanel = false
     local subMenuID = controller.beginSubMenu()
     if subMenuID == id then
-        if iui.hoverID == id and iui.input.mouse.pressed[1] then
+        if iui.hoverID == id and iui.input.mouse.pressed:has(1) then
             if not isPanelSubMenu then
                 controller.deactivate()
             else
                 isShowingPanel = true
             end
-            iui.input.mouse.pressed[1] = nil
+            iui.input.mouse.pressed:remove(1)
         else
             isShowingPanel = true
         end
@@ -85,11 +85,11 @@ function iui.subMenu(name)
 
     if iui.hoverID == id then
         local clicked = false
-        if iui.input.mouse.pressed[1] then
+        if iui.input.mouse.pressed:has(1) then
             if not isPanelSubMenu then
                 controller.activate()
             end
-            iui.input.mouse.pressed[1] = nil
+            iui.input.mouse.pressed:remove(1)
             clicked = true
         end
 
@@ -154,7 +154,7 @@ function iui.subMenu(name)
 
         local mx, my = iui.input.mouse.x, iui.input.mouse.y
         if mx >= panelX and my >= panelY and mx < panelX + panelW and my < panelY + panelH then
-            if iui.input.mouse.pressed[1] then
+            if iui.input.mouse.pressed:has(1) then
                 controller.panelClaimedMouseDown = true
             end
 

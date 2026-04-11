@@ -32,13 +32,13 @@ function iui.button(name)
         iui.becomeHover()
     end
 
-    if iui.hoverID == id and iui.input.mouse.pressed[1] then
+    if iui.hoverID == id and iui.input.mouse.pressed:has(1) then
         iui.becomeActive()
         iui.becomeFocus()
     end
 
     if iui.activeID == id then
-        if not iui.input.mouse.down[1] then
+        if not iui.input.mouse.down:has(1) then
             if iui.hoverID == id then
                 pressed = true
             end

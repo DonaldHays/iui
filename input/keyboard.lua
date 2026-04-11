@@ -1,11 +1,17 @@
+local currentPath = (...):match('(.-)[^%./]+$')
+local parentPath = currentPath:match('(.-)[^%./]+%.$')
+
+--- @class IUILib
+local iui = require(parentPath .. "iui")
+
 --- @alias IUIKeyEvent "down" | "up"
 
 --- @alias IUIKeyPressed { isRepeat: boolean }
 
 --- @class (exact) IUIKeyboardState
---- @field down table<string, true>
+--- @field down IUISet<string>
 --- @field pressed table<string, IUIKeyPressed>
---- @field released table<string, true>
+--- @field released IUISet<string>
 
 --- @class (exact) IUIKeyboardRootContext
 --- @field storage IUIKeyboardState
@@ -14,9 +20,9 @@
 --- @return IUIKeyboardState
 local function makeKeyboardState()
     return {
-        down = {},
+        down = iui.set.new(),
         pressed = {},
-        released = {}
+        released = iui.set.new()
     }
 end
 
@@ -28,11 +34,11 @@ local keyboard = {
     --- @param isRepeat boolean
     __call = function(_, event, keycode, isRepeat)
         if event == "down" then
-            ctx.storage.down[keycode] = true
+            ctx.storage.down:put(keycode)
             ctx.storage.pressed[keycode] = { isRepeat = isRepeat }
         elseif event == "up" then
-            ctx.storage.down[keycode] = nil
-            ctx.storage.released[keycode] = true
+            ctx.storage.down:remove(keycode)
+            ctx.storage.released:put(keycode)
         end
     end
 }
@@ -55,8 +61,12 @@ function keyboard.setRootContext(rootContext)
 end
 
 function keyboard.endFrame()
-    ctx.storage.pressed = {}
-    ctx.storage.released = {}
+    local pressed = ctx.storage.pressed
+    for k, _ in pairs(pressed) do
+        pressed[k] = nil
+    end
+
+    ctx.storage.released:removeAll()
 end
 
 --- @param active boolean

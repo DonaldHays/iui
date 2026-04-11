@@ -15,9 +15,9 @@ local input = {
 --- @field dy number
 --- @field scrollX number
 --- @field scrollY number
---- @field down table<number, true>
---- @field pressed table<number, true>
---- @field released table<number, true>
+--- @field down IUISet<number>
+--- @field pressed IUISet<number>
+--- @field released IUISet<number>
 --- @field newRootContext fun(): IUIMouseRootContext
 --- @field setRootContext fun(rootContext: IUIRootContext)
 --- @field endFrame fun()
@@ -27,9 +27,9 @@ local input = {
 --- @overload fun(event: IUIMouseEvent, button: number, x: number, y: number, dx: number, dy: number)
 
 --- @class IUIKeyboard
---- @field down table<string, true>
+--- @field down IUISet<string>
 --- @field pressed table<string, IUIKeyPressed>
---- @field released table<string, true>
+--- @field released IUISet<string>
 --- @field newRootContext fun(): IUIKeyboardRootContext
 --- @field setRootContext fun(rootContext: IUIRootContext)
 --- @field endFrame fun()

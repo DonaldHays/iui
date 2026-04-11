@@ -28,7 +28,7 @@ function iui.textField(name, s)
     if iui.hoverID == id then
         iui.cursor = "ibeam"
 
-        if iui.input.mouse.pressed[1] then
+        if iui.input.mouse.pressed:has(1) then
             iui.becomeFocus()
         end
     end
