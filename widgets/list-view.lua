@@ -41,20 +41,22 @@ function iui.listView(name, count, rowHeight, itemBuilder, manager)
 
     iui.scrollView("ScrollView", function()
         local panel = iui.layout.getPanel()
+        local yOffset = iui.utils.round(manager.y)
+
         panel.contentHeight = math.max(
-            panel.contentHeight, count * rowHeight + margin * 2 - manager.y
+            panel.contentHeight, count * rowHeight + margin * 2 - yOffset
         )
 
         local minIndex = math.max(
-            math.floor((manager.y - margin) / rowHeight) + 1, 1
+            math.floor((yOffset - margin) / rowHeight) + 1, 1
         )
 
         local maxIndex = math.min(
-            math.ceil((manager.y + panel.h - margin) / rowHeight), count
+            math.ceil((yOffset + panel.h - margin) / rowHeight), count
         )
 
         for index = minIndex, maxIndex do
-            panel.rowY = (index - 1) * rowHeight + margin - manager.y
+            panel.rowY = (index - 1) * rowHeight + margin - yOffset
             iui.layout.beginRow({ kind = "dynamic", count = 1 }, rowHeight)
             itemBuilder(index)
         end
