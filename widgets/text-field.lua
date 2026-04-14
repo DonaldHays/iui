@@ -71,41 +71,39 @@ function iui.textField(name, s)
         state.showCursor = nil
     end
 
-    iui.draw(function()
-        -- Outline
-        if iui.isFocused(id) then
-            iui.colors.sysAccent500:set()
-        elseif iui.hoverID == id then
-            iui.colors.sysGray300:set()
-        else
-            iui.colors.sysGray200:set()
-        end
-        iui.graphics.rectangle(x, y, w, h, 8, 8)
+    -- Outline
+    if iui.isFocused(id) then
+        iui.colors.sysAccent500:set()
+    elseif iui.hoverID == id then
+        iui.colors.sysGray300:set()
+    else
+        iui.colors.sysGray200:set()
+    end
+    iui.graphics.rectangle(x, y, w, h, 8, 8)
 
-        -- Background
-        if disabled then
-            iui.colors.sysGray100:set()
-        else
-            iui.colors.sysGray0:set()
-        end
-        iui.graphics.rectangle(x + 1, y + 1, w - 2, h - 2, 7, 7)
+    -- Background
+    if disabled then
+        iui.colors.sysGray100:set()
+    else
+        iui.colors.sysGray0:set()
+    end
+    iui.graphics.rectangle(x + 1, y + 1, w - 2, h - 2, 7, 7)
 
-        if disabled then
-            iui.colors.sysGray300:set()
-        else
-            iui.colors.sysGray900:set()
-        end
-        iui.graphics.setFont(font)
-        local textW, textH = font:getWidth(s), font:getHeight()
-        local textY = y + iui.utils.round((h - textH) / 2)
-        iui.graphics.print(s, x + padding, textY)
+    if disabled then
+        iui.colors.sysGray300:set()
+    else
+        iui.colors.sysGray900:set()
+    end
+    iui.graphics.setFont(font)
+    local textW, textH = font:getWidth(s), font:getHeight()
+    local textY = y + iui.utils.round((h - textH) / 2)
+    iui.graphics.print(s, x + padding, textY)
 
-        if iui.isFocused(id) and state.showCursor then
-            iui.colors.sysAccent500:set()
-            local radius = (iui.detail == "high" and 1 or nil)
-            iui.graphics.rectangle(x + padding + textW, textY, 2, textH, radius, radius)
-        end
-    end)
+    if iui.isFocused(id) and state.showCursor then
+        iui.colors.sysAccent500:set()
+        local radius = (iui.detail == "high" and 1 or nil)
+        iui.graphics.rectangle(x + padding + textW, textY, 2, textH, radius, radius)
+    end
 
     iui.endID()
 

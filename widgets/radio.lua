@@ -64,51 +64,49 @@ function iui.radio(name, current, value)
     local radius = math.ceil(size / 2)
     local radioY = y + iui.utils.round((h - size) / 2)
 
-    iui.draw(function()
-        -- Outline
-        if not disabled then
-            if iui.isFocused(id) and iui.idiom ~= "vr" then
-                iui.colors.sysAccent500:set()
-            elseif iui.hoverID == id then
-                iui.colors.sysGray300:set()
-            else
-                iui.colors.sysGray200:set()
-            end
-            iui.graphics.circle(x + radius, radioY + radius, radius)
-        end
-
-        -- Background
-        if (iui.hoverID == id and iui.activeID == id) or disabled then
-            iui.colors.sysGray100:set()
-        else
-            iui.colors.sysGray0:set()
-        end
-        iui.graphics.circle(x + radius, radioY + radius, radius - 1.5)
-
-        -- Check
-        if current == value then
-            if disabled then
-                iui.colors.sysGray200:set()
-            elseif iui.hoverID == id and iui.activeID == id then
-                iui.colors.sysGray200:set()
-            elseif iui.hoverID == id then
-                iui.colors.sysGray400:set()
-            else
-                iui.colors.sysGray300:set()
-            end
-
-            iui.graphics.circle(x + radius, radioY + radius, radius - 4)
-        end
-
-        -- Label
-        if disabled then
+    -- Outline
+    if not disabled then
+        if iui.isFocused(id) and iui.idiom ~= "vr" then
+            iui.colors.sysAccent500:set()
+        elseif iui.hoverID == id then
             iui.colors.sysGray300:set()
         else
-            iui.colors.sysGray900:set()
+            iui.colors.sysGray200:set()
         end
-        iui.graphics.setFont(font)
-        iui.graphics.print(name, x + textX, textY)
-    end)
+        iui.graphics.circle(x + radius, radioY + radius, radius)
+    end
+
+    -- Background
+    if (iui.hoverID == id and iui.activeID == id) or disabled then
+        iui.colors.sysGray100:set()
+    else
+        iui.colors.sysGray0:set()
+    end
+    iui.graphics.circle(x + radius, radioY + radius, radius - 1.5)
+
+    -- Check
+    if current == value then
+        if disabled then
+            iui.colors.sysGray200:set()
+        elseif iui.hoverID == id and iui.activeID == id then
+            iui.colors.sysGray200:set()
+        elseif iui.hoverID == id then
+            iui.colors.sysGray400:set()
+        else
+            iui.colors.sysGray300:set()
+        end
+
+        iui.graphics.circle(x + radius, radioY + radius, radius - 4)
+    end
+
+    -- Label
+    if disabled then
+        iui.colors.sysGray300:set()
+    else
+        iui.colors.sysGray900:set()
+    end
+    iui.graphics.setFont(font)
+    iui.graphics.print(name, x + textX, textY)
 
     iui.endID()
 

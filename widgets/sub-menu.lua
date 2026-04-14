@@ -108,35 +108,33 @@ function iui.subMenu(name)
 
     local x, y, w, h = iui.layout.getBounds()
 
-    iui.draw(function()
-        -- Background
-        if isPanelSubMenu then
-            if iui.hoverID == id or subMenuID == id then
-                iui.colors.sysGray200:set()
-                iui.graphics.rectangle(x + 4, y, w - 8, h, 2, 2)
-            end
-        else
-            if iui.hoverID == id or subMenuID == id then
-                iui.colors.sysGray200:set()
-                iui.graphics.rectangle(x, y + 2, w, h - 4, 2, 2)
-            end
+    -- Background
+    if isPanelSubMenu then
+        if iui.hoverID == id or subMenuID == id then
+            iui.colors.sysGray200:set()
+            iui.graphics.rectangle(x + 4, y, w - 8, h, 2, 2)
         end
+    else
+        if iui.hoverID == id or subMenuID == id then
+            iui.colors.sysGray200:set()
+            iui.graphics.rectangle(x, y + 2, w, h - 4, 2, 2)
+        end
+    end
 
-        iui.colors.sysGray900:set()
-        iui.graphics.setFont(font)
-        local textX
-        local textY = y + iui.utils.round((h - textH) / 2)
-        if isPanelSubMenu then
-            textX = x + padding
-            local discY = y + iui.utils.round((h - discSize) / 2)
-            iui.graphics.msdfImage(
-                disclosureImage, x + w - padding - discSize, discY, discSize, discSize
-            )
-        else
-            textX = x + iui.utils.round((w - textW) / 2)
-        end
-        iui.graphics.print(name, textX, textY)
-    end)
+    iui.colors.sysGray900:set()
+    iui.graphics.setFont(font)
+    local textX
+    local textY = y + iui.utils.round((h - textH) / 2)
+    if isPanelSubMenu then
+        textX = x + padding
+        local discY = y + iui.utils.round((h - discSize) / 2)
+        iui.graphics.msdfImage(
+            disclosureImage, x + w - padding - discSize, discY, discSize, discSize
+        )
+    else
+        textX = x + iui.utils.round((w - textW) / 2)
+    end
+    iui.graphics.print(name, textX, textY)
 
     iui.endID()
 
@@ -168,13 +166,11 @@ function iui.subMenu(name)
         end
 
         -- Panel background
-        iui.draw(function()
-            iui.colors.sysGray300:set()
-            iui.graphics.rectangle(panelX, panelY, panelW, state.panelH, 4, 4)
+        iui.colors.sysGray300:set()
+        iui.graphics.rectangle(panelX, panelY, panelW, state.panelH or 0, 4, 4)
 
-            iui.colors.sysGray100:set()
-            iui.graphics.rectangle(panelX + 1, panelY + 1, panelW - 2, state.panelH - 2, 3, 3)
-        end)
+        iui.colors.sysGray100:set()
+        iui.graphics.rectangle(panelX + 1, panelY + 1, panelW - 2, (state.panelH or 0) - 2, 3, 3)
 
         iui.layout.beginPanel(panelX, panelY, panelW, panelH, 1)
         iui.style.push()

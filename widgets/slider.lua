@@ -59,51 +59,49 @@ function iui.slider(name, value, min, max)
     percent = (value - min) / (max - min)
     thumb = x + radius + iui.utils.round((w - radius * 2) * percent)
 
-    iui.draw(function()
-        -- Track
-        if disabled then
-            iui.colors.sysGray100:set()
-        else
-            iui.colors.sysGray200:set()
-        end
-        iui.graphics.rectangle(
-            x + radius, y + iui.utils.round(h / 2) - 2,
-            w - radius * 2, 4,
-            2, 2
-        )
+    -- Track
+    if disabled then
+        iui.colors.sysGray100:set()
+    else
+        iui.colors.sysGray200:set()
+    end
+    iui.graphics.rectangle(
+        x + radius, y + iui.utils.round(h / 2) - 2,
+        w - radius * 2, 4,
+        2, 2
+    )
 
-        iui.colors.sysGray50:set()
-        iui.graphics.rectangle(
-            x + radius + 1, y + iui.utils.round(h / 2) - 1,
-            w - radius * 2 - 2, 2,
-            1, 1
-        )
+    iui.colors.sysGray50:set()
+    iui.graphics.rectangle(
+        x + radius + 1, y + iui.utils.round(h / 2) - 1,
+        w - radius * 2 - 2, 2,
+        1, 1
+    )
 
-        -- Thumb
-        if disabled then
-            iui.colors.sysGray100:set()
-        elseif iui.isFocused(id) and iui.idiom ~= "vr" then
-            iui.colors.sysAccent500:set()
-        elseif iui.activeID == id then
-            iui.colors.sysGray200:set()
+    -- Thumb
+    if disabled then
+        iui.colors.sysGray100:set()
+    elseif iui.isFocused(id) and iui.idiom ~= "vr" then
+        iui.colors.sysAccent500:set()
+    elseif iui.activeID == id then
+        iui.colors.sysGray200:set()
+    elseif iui.hoverID == id then
+        iui.colors.sysGray400:set()
+    else
+        iui.colors.sysGray300:set()
+    end
+    iui.graphics.circle(thumb, y + iui.utils.round(h / 2), radius)
+
+    if not disabled then
+        if iui.activeID == id then
+            iui.colors.sysGray50:set()
         elseif iui.hoverID == id then
-            iui.colors.sysGray400:set()
+            iui.colors.sysGray200:set()
         else
-            iui.colors.sysGray300:set()
+            iui.colors.sysGray100:set()
         end
-        iui.graphics.circle(thumb, y + iui.utils.round(h / 2), radius)
-
-        if not disabled then
-            if iui.activeID == id then
-                iui.colors.sysGray50:set()
-            elseif iui.hoverID == id then
-                iui.colors.sysGray200:set()
-            else
-                iui.colors.sysGray100:set()
-            end
-            iui.graphics.circle(thumb, y + iui.utils.round(h / 2), radius - 1.5)
-        end
-    end)
+        iui.graphics.circle(thumb, y + iui.utils.round(h / 2), radius - 1.5)
+    end
 
     iui.endID()
 

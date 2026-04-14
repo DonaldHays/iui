@@ -59,7 +59,9 @@ function iui.load(backend, config)
     iui.dpi = config.dpi or backend.system.getDPI()
 
     iui.backend = backend
-    iui.graphics = backend.graphics
+    iui.graphics = iui.drawQueue
+
+    iui.drawQueue.setBackend(backend.graphics)
 
     backend.load(iui)
 

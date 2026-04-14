@@ -64,13 +64,11 @@ function iui.scrollView(name, content, manager)
     local scrollX, scrollY = innerX + innerW + 1, innerY
     local scrollW, scrollH = scrollSize, innerH
 
-    iui.draw(function()
-        iui.colors.sysGray200:set()
-        iui.graphics.rectangle(x, y, w, h)
+    iui.colors.sysGray200:set()
+    iui.graphics.rectangle(x, y, w, h)
 
-        iui.colors.sysGray0:set()
-        iui.graphics.rectangle(innerX, innerY, innerW, innerH)
-    end)
+    iui.colors.sysGray0:set()
+    iui.graphics.rectangle(innerX, innerY, innerW, innerH)
 
     iui.layout.beginZStack()
     iui.draw.pushClip(innerX, innerY, innerW, innerH)

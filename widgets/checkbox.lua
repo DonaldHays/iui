@@ -68,53 +68,51 @@ function iui.checkbox(name, checked)
     local textY = y + iui.utils.round((h - textH) / 2)
     local boxY = y + iui.utils.round((h - size) / 2)
 
-    iui.draw(function()
-        -- Outline
-        if not disabled then
-            if iui.isFocused(id) and iui.idiom ~= "vr" then
-                iui.colors.sysAccent500:set()
-            elseif iui.hoverID == id then
-                iui.colors.sysGray300:set()
-            else
-                iui.colors.sysGray200:set()
-            end
-            iui.graphics.rectangle(x, boxY, size, size, 2, 2)
-        end
-
-        -- Background
-        if (iui.hoverID == id and iui.activeID == id) or disabled then
-            iui.colors.sysGray100:set()
-        else
-            iui.colors.sysGray0:set()
-        end
-        iui.graphics.rectangle(x + 1, boxY + 1, size - 2, size - 2, 1, 1)
-
-        -- Check
-        if checked then
-            if disabled then
-                iui.colors.sysGray200:set()
-            elseif iui.hoverID == id and iui.activeID == id then
-                iui.colors.sysGray200:set()
-            elseif iui.hoverID == id then
-                iui.colors.sysGray400:set()
-            else
-                iui.colors.sysGray300:set()
-            end
-
-            iui.graphics.msdfImage(
-                checkmarkImage, x + 2, boxY + 2, size - 4, size - 4
-            )
-        end
-
-        -- Label
-        if disabled then
+    -- Outline
+    if not disabled then
+        if iui.isFocused(id) and iui.idiom ~= "vr" then
+            iui.colors.sysAccent500:set()
+        elseif iui.hoverID == id then
             iui.colors.sysGray300:set()
         else
-            iui.colors.sysGray900:set()
+            iui.colors.sysGray200:set()
         end
-        iui.graphics.setFont(font)
-        iui.graphics.print(name, x + textX, textY)
-    end)
+        iui.graphics.rectangle(x, boxY, size, size, 2, 2)
+    end
+
+    -- Background
+    if (iui.hoverID == id and iui.activeID == id) or disabled then
+        iui.colors.sysGray100:set()
+    else
+        iui.colors.sysGray0:set()
+    end
+    iui.graphics.rectangle(x + 1, boxY + 1, size - 2, size - 2, 1, 1)
+
+    -- Check
+    if checked then
+        if disabled then
+            iui.colors.sysGray200:set()
+        elseif iui.hoverID == id and iui.activeID == id then
+            iui.colors.sysGray200:set()
+        elseif iui.hoverID == id then
+            iui.colors.sysGray400:set()
+        else
+            iui.colors.sysGray300:set()
+        end
+
+        iui.graphics.msdfImage(
+            checkmarkImage, x + 2, boxY + 2, size - 4, size - 4
+        )
+    end
+
+    -- Label
+    if disabled then
+        iui.colors.sysGray300:set()
+    else
+        iui.colors.sysGray900:set()
+    end
+    iui.graphics.setFont(font)
+    iui.graphics.print(name, x + textX, textY)
 
     iui.endID()
 

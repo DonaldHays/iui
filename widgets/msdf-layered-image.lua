@@ -18,12 +18,10 @@ function iui.msdfLayeredImage(image)
         iui.draw.pushClip(bx, by, bw, bh)
     end
 
-    iui.draw(function()
-        for _, item in ipairs(image) do
-            item.color:set()
-            iui.graphics.msdfImage(item.image, ox, oy, ow, oh)
-        end
-    end)
+    for _, item in ipairs(image) do
+        item.color:set()
+        iui.graphics.msdfImage(item.image, ox, oy, ow, oh)
+    end
 
     if clip then
         iui.draw.popClip()

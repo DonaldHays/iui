@@ -8,8 +8,7 @@ local iui = require(parentPath .. "iui")
 function iui.panelBackground(color)
     color = color or iui.colors.sysGray50
     local x, y, w, h = iui.layout.getPanelBounds()
-    iui.draw(function()
-        color:set()
-        iui.draw.panelBackground(x, y, w, h)
-    end)
+
+    color:set()
+    iui.draw.panelBackground(x, y, w, h)
 end

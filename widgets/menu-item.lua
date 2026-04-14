@@ -53,28 +53,26 @@ function iui.menuItem(name, command)
     end
 
     local x, y, w, h = iui.layout.getBounds()
-    iui.draw(function()
-        -- Background
-        if iui.hoverID == id then
-            iui.colors.sysGray200:set()
-            iui.graphics.rectangle(x + 4, y, w - 8, h, 2, 2)
-        end
+    -- Background
+    if iui.hoverID == id then
+        iui.colors.sysGray200:set()
+        iui.graphics.rectangle(x + 4, y, w - 8, h, 2, 2)
+    end
 
-        if disabled then
-            iui.colors.sysGray300:set()
-        else
-            iui.colors.sysGray900:set()
-        end
-        iui.graphics.setFont(font)
-        local textX = x + padding
-        local textY = y + iui.utils.round((h - textH) / 2)
-        iui.graphics.print(name, textX, textY)
+    if disabled then
+        iui.colors.sysGray300:set()
+    else
+        iui.colors.sysGray900:set()
+    end
+    iui.graphics.setFont(font)
+    local textX = x + padding
+    local textY = y + iui.utils.round((h - textH) / 2)
+    iui.graphics.print(name, textX, textY)
 
-        if command and commandW then
-            local commandX = x + w - padding - commandW
-            iui.graphics.print(command, commandX, textY)
-        end
-    end)
+    if command and commandW then
+        local commandX = x + w - padding - commandW
+        iui.graphics.print(command, commandX, textY)
+    end
 
     iui.endID()
 

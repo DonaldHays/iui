@@ -27,45 +27,43 @@ function iui.progress(value, min, max)
         iui.layout.setIntrinsicHeight(barHeight)
     end
 
-    iui.draw(function()
-        -- Border
-        iui.colors.sysGray200:set()
-        iui.graphics.rectangle(x, y, w, h, 4, 4)
+    -- Border
+    iui.colors.sysGray200:set()
+    iui.graphics.rectangle(x, y, w, h, 4, 4)
 
-        -- Background
+    -- Background
+    if disabled then
+        iui.colors.sysGray100:set()
+    else
+        iui.colors.sysGray0:set()
+    end
+    iui.graphics.rectangle(x + 1, y + 1, w - 2, h - 2, 3, 3)
+
+    -- Bar
+    local shouldClip = value > min and value < max
+    if shouldClip then
+        local percent = (value - min) / (max - min)
+        percent = iui.utils.clamp(percent, 0, 1)
+
+        -- Force at least one full pixel and one empty pixel
+        local width = iui.utils.clamp(
+            iui.utils.round(bw * percent), 1, bw - 1
+        )
+        iui.graphics.clip(bx, by, width, bh)
+    end
+
+    if value > min then
         if disabled then
-            iui.colors.sysGray100:set()
+            iui.colors.sysGray200:set()
         else
-            iui.colors.sysGray0:set()
+            iui.colors.sysAccent500:set()
         end
-        iui.graphics.rectangle(x + 1, y + 1, w - 2, h - 2, 3, 3)
+        iui.graphics.rectangle(bx, by, bw, bh, 2, 2)
+    end
 
-        -- Bar
-        local shouldClip = value > min and value < max
-        if shouldClip then
-            local percent = (value - min) / (max - min)
-            percent = iui.utils.clamp(percent, 0, 1)
-
-            -- Force at least one full pixel and one empty pixel
-            local width = iui.utils.clamp(
-                iui.utils.round(bw * percent), 1, bw - 1
-            )
-            iui.graphics.clip(bx, by, width, bh)
-        end
-
-        if value > min then
-            if disabled then
-                iui.colors.sysGray200:set()
-            else
-                iui.colors.sysAccent500:set()
-            end
-            iui.graphics.rectangle(bx, by, bw, bh, 2, 2)
-        end
-
-        if shouldClip then
-            iui.graphics.clip()
-        end
-    end)
+    if shouldClip then
+        iui.graphics.clip()
+    end
 
     iui.layout.advance()
 end

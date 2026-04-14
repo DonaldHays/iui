@@ -5,11 +5,13 @@ local iui = require(currentPath .. "iui")
 
 --- @class IUIDraw
 --- @overload fun()
---- @overload fun(onDraw: fun())
 local draw = {}
 
+--- @class (exact) IUIDrawCommand
+--- @field commit fun(command: IUIDrawCommand)
+
 --- @class (exact) IUIDrawContext
---- @field drawList fun()[]
+--- @field commands IUIDrawCommand[]
 --- @field currentClip? number[]
 --- @field clipStack number[][]
 --- @field hideCount number
@@ -31,22 +33,28 @@ end
 setmetatable(draw --[[@as any]], {
     __call = function(_, onDraw)
         if onDraw then
-            local drawContext = getDrawContext()
-            if drawContext.hideCount == 0 then
-                table.insert(drawContext.drawList, onDraw)
-            end
+            error("IUI no longer takes draw blocks")
         else
             iui.graphics.beginDraw(ctx.width, ctx.height)
             for index, context in ipairs(ctx.drawContexts) do
                 iui.layer.willDrawLayer(index)
-                for _, f in ipairs(context.drawList) do
-                    f()
+                for _, command in ipairs(context.commands) do
+                    command.commit(command)
+                    iui.pool.put(command)
                 end
             end
             iui.graphics.endDraw()
         end
     end
 })
+
+--- @param command IUIDrawCommand
+function draw.enqueue(command)
+    local drawContext = getDrawContext()
+    if drawContext.hideCount == 0 then
+        table.insert(drawContext.commands, command)
+    end
+end
 
 --- @return IUIDrawRootContext
 function draw.newRootContext()
@@ -82,7 +90,7 @@ function draw.beginContext()
     --- @type IUIDrawContext
     local drawContext = {
         clipStack = {},
-        drawList = {},
+        commands = {},
         hideCount = 0
     }
     table.insert(ctx.drawContexts, drawContext)
@@ -129,9 +137,7 @@ function draw.pushClip(x, y, w, h)
     end
 
     drawContext.currentClip = { x, y, w, h }
-    draw(function()
-        iui.graphics.clip(x, y, w, h)
-    end)
+    iui.graphics.clip(x, y, w, h)
 end
 
 function draw.popClip()
@@ -146,9 +152,7 @@ function draw.popClip()
         drawContext.currentClip = nil
     end
 
-    draw(function()
-        iui.graphics.clip()
-    end)
+    iui.graphics.clip()
 end
 
 --- @return number? x, number? y, number? w, number? h

@@ -21,10 +21,8 @@ function iui.msdfImage(image, color)
         iui.draw.pushClip(bx, by, bw, bh)
     end
 
-    iui.draw(function()
-        color:set()
-        iui.graphics.msdfImage(image, ox, oy, ow, oh)
-    end)
+    color:set()
+    iui.graphics.msdfImage(image, ox, oy, ow, oh)
 
     if clip then
         iui.draw.popClip()

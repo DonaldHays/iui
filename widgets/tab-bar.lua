@@ -11,13 +11,11 @@ function iui.tabBar(items, content)
 
     local barHeight = iui.layout.getDefaultRowHeight() + 1
 
-    iui.draw(function()
-        iui.colors.sysGray100:set()
-        iui.draw.panelBackground(x, y, w, barHeight - 1)
+    iui.colors.sysGray100:set()
+    iui.draw.panelBackground(x, y, w, barHeight - 1)
 
-        iui.colors.sysGray200:set()
-        iui.graphics.rectangle(x, y + barHeight - 1, w, 1)
-    end)
+    iui.colors.sysGray200:set()
+    iui.graphics.rectangle(x, y + barHeight - 1, w, 1)
 
     iui.layout.beginPanel(x + 1, y, w - 2, barHeight, 0)
     iui.layout.beginRow({ kind = "intrinsic" }, barHeight)
@@ -78,50 +76,48 @@ function iui.tabItem(name, current, value)
     local textX = x + padding * 2
     local textY = y + iui.utils.round((h - textH) / 2)
 
-    iui.draw(function()
-        local top = y + 1
-        local fh = h - 9
+    local top = y + 1
+    local fh = h - 9
 
-        --- @type IUIColor
-        local backgroundColor
+    --- @type IUIColor
+    local backgroundColor
 
-        if out == value then
-            iui.graphics.clip(x, y, w + 1, h)
-            backgroundColor = iui.colors.sysGray50
-            textY = textY
-            fh = fh + 2
+    if out == value then
+        iui.graphics.clip(x, y, w + 1, h)
+        backgroundColor = iui.colors.sysGray50
+        textY = textY
+        fh = fh + 2
+    else
+        iui.graphics.clip(x, y, w + 1, h - 1)
+        top = top + 2
+        textY = textY + 1
+
+        if iui.hoverID == id then
+            backgroundColor = iui.colors.sysGray200
         else
-            iui.graphics.clip(x, y, w + 1, h - 1)
-            top = top + 2
-            textY = textY + 1
-
-            if iui.hoverID == id then
-                backgroundColor = iui.colors.sysGray200
-            else
-                backgroundColor = iui.colors.sysGray100
-            end
+            backgroundColor = iui.colors.sysGray100
         end
+    end
 
-        -- Outline
-        iui.colors.sysGray200:set()
-        iui.graphics.rectangle(x, top, w + 1, h + 6, 6, 6)
+    -- Outline
+    iui.colors.sysGray200:set()
+    iui.graphics.rectangle(x, top, w + 1, h + 6, 6, 6)
 
-        -- Background
-        backgroundColor:set()
-        iui.graphics.rectangle(x + 1, top + 1, w - 1, h + 5, 5, 5)
+    -- Background
+    backgroundColor:set()
+    iui.graphics.rectangle(x + 1, top + 1, w - 1, h + 5, 5, 5)
 
-        if iui.idiom ~= "vr" and iui.isFocused(id) then
-            iui.colors.sysAccent500:set()
-            iui.graphics.rectangle(x + padding, y + h - 6, w - padding * 2, 2, 1, 1)
-        end
+    if iui.idiom ~= "vr" and iui.isFocused(id) then
+        iui.colors.sysAccent500:set()
+        iui.graphics.rectangle(x + padding, y + h - 6, w - padding * 2, 2, 1, 1)
+    end
 
-        -- Label
-        iui.colors.sysGray900:set()
-        iui.graphics.setFont(font)
-        iui.graphics.print(name, textX, textY)
+    -- Label
+    iui.colors.sysGray900:set()
+    iui.graphics.setFont(font)
+    iui.graphics.print(name, textX, textY)
 
-        iui.graphics.clip()
-    end)
+    iui.graphics.clip()
 
     iui.endID()
 

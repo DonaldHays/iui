@@ -50,32 +50,30 @@ function iui.scrollBar(name, dir, value, length, min, max)
         end
     end
 
-    iui.draw(function()
-        if isScrollable then
-            iui.colors.sysGray0:set()
-            iui.graphics.rectangle(x, y, w, h)
+    if isScrollable then
+        iui.colors.sysGray0:set()
+        iui.graphics.rectangle(x, y, w, h)
 
-            local bx, by = x, y + (value / (max - min)) * h
-            local bw, bh = w, (length / (max - min)) * h
-            local by2 = by + bh
-            by = iui.utils.round(by)
-            bh = iui.utils.round(by2) - by
+        local bx, by = x, y + (value / (max - min)) * h
+        local bw, bh = w, (length / (max - min)) * h
+        local by2 = by + bh
+        by = iui.utils.round(by)
+        bh = iui.utils.round(by2) - by
 
-            if iui.hoverID == id or iui.activeID == id then
-                iui.colors.sysGray200:set()
-            else
-                iui.colors.sysGray100:set()
-            end
-            iui.graphics.rectangle(bx, by, bw, bh)
-
+        if iui.hoverID == id or iui.activeID == id then
             iui.colors.sysGray200:set()
-            iui.graphics.rectangle(bx, by - 1, bw, 1)
-            iui.graphics.rectangle(bx, by + bh, bw, 1)
         else
-            iui.colors.sysGray50:set()
-            iui.graphics.rectangle(x, y, w, h)
+            iui.colors.sysGray100:set()
         end
-    end)
+        iui.graphics.rectangle(bx, by, bw, bh)
+
+        iui.colors.sysGray200:set()
+        iui.graphics.rectangle(bx, by - 1, bw, 1)
+        iui.graphics.rectangle(bx, by + bh, bw, 1)
+    else
+        iui.colors.sysGray50:set()
+        iui.graphics.rectangle(x, y, w, h)
+    end
 
     iui.endID()
 

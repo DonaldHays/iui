@@ -8,11 +8,13 @@ iui.resourcePath = resourcePath
 
 require(currentPath .. "utils")
 require(currentPath .. "set")
+require(currentPath .. "pool")
 require(currentPath .. "root-context")
 require(currentPath .. "color")
 require(currentPath .. "input")
 require(currentPath .. "id")
 require(currentPath .. "draw")
+require(currentPath .. "draw-queue")
 require(currentPath .. "layout")
 require(currentPath .. "style")
 require(currentPath .. "state")

@@ -18,11 +18,9 @@ function iui.divider()
     local padding = 0
     local top = math.floor(y + h / 2)
 
-    iui.draw(function()
-        iui.colors.sysGray200:set()
-        local radius = (iui.detail == "high" and 0.5 or nil)
-        iui.graphics.rectangle(x + padding, top, w - padding * 2, 1, radius, radius)
-    end)
+    iui.colors.sysGray200:set()
+    local radius = (iui.detail == "high" and 0.5 or nil)
+    iui.graphics.rectangle(x + padding, top, w - padding * 2, 1, radius, radius)
 
     iui.layout.advance()
     panel.rowHeight = rowHeight

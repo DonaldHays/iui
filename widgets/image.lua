@@ -21,10 +21,8 @@ function iui.image(image)
         iui.draw.pushClip(bx, by, bw, bh)
     end
 
-    iui.draw(function()
-        iui.graphics.setColor(1, 1, 1)
-        iui.graphics.image(image, filter, ox, oy, ow, oh)
-    end)
+    iui.graphics.setColor(1, 1, 1)
+    iui.graphics.image(image, filter, ox, oy, ow, oh)
 
     if clip then
         iui.draw.popClip()

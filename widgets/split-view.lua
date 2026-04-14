@@ -105,14 +105,12 @@ function iui.splitView(name, direction, current, first, second)
     iui.panelBackground()
 
     local pos = current
-    iui.draw(function()
-        iui.colors.sysGray0:set()
-        if direction == "horiz" then
-            iui.graphics.rectangle(x + pos, y, 1, h)
-        elseif direction == "vert" then
-            iui.graphics.rectangle(x, y + pos, w, 1)
-        end
-    end)
+    iui.colors.sysGray0:set()
+    if direction == "horiz" then
+        iui.graphics.rectangle(x + pos, y, 1, h)
+    elseif direction == "vert" then
+        iui.graphics.rectangle(x, y + pos, w, 1)
+    end
 
     if direction == "horiz" then
         iui.layout.beginPanel(x, y, current, h)

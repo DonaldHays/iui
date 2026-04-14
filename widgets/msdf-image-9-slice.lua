@@ -11,10 +11,8 @@ function iui.msdfImage9Slice(image, color)
 
     local x, y, w, h = iui.layout.getBounds()
 
-    iui.draw(function()
-        color:set()
-        iui.graphics.msdfNineSlice(image, x, y, w, h)
-    end)
+    color:set()
+    iui.graphics.msdfNineSlice(image, x, y, w, h)
 
     iui.layout.advance()
 end

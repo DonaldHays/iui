@@ -17,17 +17,15 @@ function iui.menuBar(items, content)
     iui.layout.endPanel()
 
     -- Draw bar
-    iui.draw(function()
-        iui.graphics.clip(x, y, w, barHeight)
+    iui.graphics.clip(x, y, w, barHeight)
 
-        iui.colors.sysGray100:set()
-        iui.draw.panelBackground(x, y, w, barHeight - 1)
+    iui.colors.sysGray100:set()
+    iui.draw.panelBackground(x, y, w, barHeight - 1)
 
-        iui.colors.sysGray200:set()
-        iui.graphics.rectangle(x, barHeight - 1, w, 1)
+    iui.colors.sysGray200:set()
+    iui.graphics.rectangle(x, barHeight - 1, w, 1)
 
-        iui.graphics.clip()
-    end)
+    iui.graphics.clip()
 
     local id = iui.beginID("__menuBar", false)
     local state = iui.state(id)
