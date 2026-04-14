@@ -49,10 +49,20 @@ setmetatable(draw --[[@as any]], {
 })
 
 --- @param command IUIDrawCommand
+--- @overload fun(f: function)
 function draw.enqueue(command)
     local drawContext = getDrawContext()
     if drawContext.hideCount == 0 then
-        table.insert(drawContext.commands, command)
+        if type(command) == "function" then
+            --- @type IUIDrawCommand
+            local cmd = iui.pool.get("function_draw_command")
+
+            cmd.commit = command
+
+            table.insert(drawContext.commands, cmd)
+        else
+            table.insert(drawContext.commands, command)
+        end
     end
 end
 
