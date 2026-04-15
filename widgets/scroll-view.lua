@@ -4,6 +4,12 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 --- @class IUILib
 local iui = require(parentPath .. "iui")
 
+--- @class (exact) IUIScrollViewState
+--- @field manager? IUIScrollManager
+--- @field vy? number
+--- @field dragOrigin? { x: number, y: number }
+--- @field isDragging? boolean
+
 --- @class IUIScrollManager
 --- @field x number
 --- @field y number
@@ -17,6 +23,47 @@ ScrollManager.__index = ScrollManager
 function ScrollManager:fixOffset()
     self.x = math.max(math.min(self.x, self.contentWidth - self.clipWidth), 0)
     self.y = math.max(math.min(self.y, self.contentHeight - self.clipHeight), 0)
+end
+
+--- @param x number
+--- @param y number
+--- @param w? number
+--- @param h? number
+function ScrollManager:scrollTo(x, y, w, h)
+    local minX = self.x
+    local maxX = self.x + self.clipWidth
+    local targetMinX = x
+    local targetMaxX = x + (w or 1)
+
+    local minY = self.y
+    local maxY = self.y + self.clipHeight
+    local targetMinY = y
+    local targetMaxY = y + (h or 1)
+
+    if targetMaxX > maxX then
+        maxX = targetMaxX
+        minX = maxX - self.clipWidth
+    end
+
+    if targetMinX < minX then
+        minX = targetMinX
+        maxX = minX + self.clipWidth
+    end
+
+    if targetMaxY > maxY then
+        maxY = targetMaxY
+        minY = maxY - self.clipHeight
+    end
+
+    if targetMinY < minY then
+        minY = targetMinY
+        maxY = minY + self.clipHeight
+    end
+
+    self.x = minX
+    self.y = minY
+
+    self:fixOffset()
 end
 
 iui.ScrollManager = ScrollManager
@@ -41,6 +88,8 @@ end
 --- @param manager? IUIScrollManager
 function iui.scrollView(name, content, manager)
     local id = iui.beginID(name, false)
+
+    --- @type IUIScrollViewState
     local state = iui.state(id)
 
     if not manager then

@@ -5,9 +5,25 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 local iui = require(parentPath .. "iui")
 
 --- @class IUIListManager: IUIScrollManager
+--- @field rowHeight? number
 local ListManager = {}
 ListManager.__index = ListManager
 setmetatable(ListManager, iui.ScrollManager)
+
+--- @param index number
+function ListManager:scrollToIndex(index)
+    local rowHeight = self.rowHeight
+    if rowHeight == nil then
+        return
+    end
+
+    local margin = iui.style["margin"]
+    local spacing = iui.style["spacing"]
+
+    local top = margin + (index - 1) * (rowHeight + spacing)
+
+    self:scrollTo(0, top, nil, rowHeight)
+end
 
 --- @return IUIListManager
 function iui.newListManager()
@@ -41,6 +57,8 @@ function iui.listView(name, count, rowHeight, itemBuilder, manager)
             state.manager = manager
         end
     end
+
+    manager.rowHeight = rowHeight
 
     iui.scrollView("ScrollView", function()
         if count == 0 then
