@@ -94,25 +94,31 @@ function layout.beginPanel(x, y, w, h, margin)
     local rowHeight = layout.getDefaultRowHeight()
 
     --- @type IUILayoutPanel
-    local panel = {
-        x = x,
-        y = y,
-        w = w,
-        h = h,
-        margin = margin,
-        rowHeight = rowHeight,
-        rowY = margin,
-        columnX = margin,
-        wantsIntrinsicWidth = false,
-        wantsIntrinsicHeight = false,
-        columnIndex = 1,
-        columns = {
-            kind = "dynamic",
-            count = 1
-        },
-        contentWidth = 0,
-        contentHeight = 0
+    local panel = iui.pool.get("layout_panel")
+
+    panel.x = x
+    panel.y = y
+    panel.w = w
+    panel.h = h
+    panel.margin = margin
+    panel.rowHeight = rowHeight
+    panel.rowY = margin
+    panel.columnX = margin
+    panel.wantsIntrinsicWidth = false
+    panel.wantsIntrinsicHeight = false
+    panel.columnIndex = 1
+    panel.columns = {
+        kind = "dynamic",
+        count = 1
     }
+    panel.contentWidth = 0
+    panel.contentHeight = 0
+
+    panel.intrinsicWidth = nil
+    panel.intrinsicHeight = nil
+    panel.columnCountCache = nil
+    panel.columnBoundsCache = nil
+    panel.zStackCount = nil
 
     table.insert(panels, panel)
 
@@ -130,6 +136,8 @@ function layout.endPanel(advance)
     end
 
     table.remove(panels)
+
+    iui.pool.put(panel)
 
     if advance == true or (#panels > 0 and advance ~= false) then
         iui.layout.advance()

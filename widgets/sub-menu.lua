@@ -186,9 +186,8 @@ function iui.subMenu(name)
         end
 
         --- @type IUISubMenuStackItem
-        local stackItem = {
-            state = state
-        }
+        local stackItem = iui.pool.get("sub_menu_stack_item")
+        stackItem.state = state
         table.insert(subMenuStack, stackItem)
     else
         controller.endSubMenu()
@@ -202,6 +201,8 @@ function iui.endSubMenu()
     local stackItem = table.remove(subMenuStack)
 
     local state = stackItem.state
+
+    iui.pool.put(stackItem)
 
     if state.panelH == nil then
         iui.draw.endHiding()
