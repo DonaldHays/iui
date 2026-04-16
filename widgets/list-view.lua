@@ -60,11 +60,9 @@ function iui.listView(name, count, rowHeight, itemBuilder, manager)
 
     manager.rowHeight = rowHeight
 
-    iui.scrollView("ScrollView", function()
-        if count == 0 then
-            return
-        end
+    iui.scrollView("ScrollView", manager)
 
+    if count > 0 then
         local panel = iui.layout.getPanel()
         local yOffset = iui.utils.round(manager.y)
 
@@ -85,7 +83,9 @@ function iui.listView(name, count, rowHeight, itemBuilder, manager)
             iui.layout.beginRow({ kind = "dynamic", count = 1 }, rowHeight)
             itemBuilder(index)
         end
-    end, manager)
+    end
+
+    iui.endScrollView()
 
     iui.endID(false)
 end

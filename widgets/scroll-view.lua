@@ -10,6 +10,19 @@ local iui = require(parentPath .. "iui")
 --- @field dragOrigin? { x: number, y: number }
 --- @field isDragging? boolean
 
+--- @class (exact) IUIScrollViewStackItem
+--- @field state IUIScrollViewState
+--- @field manager IUIScrollManager
+--- @field id number
+--- @field innerX number
+--- @field innerY number
+--- @field innerW number
+--- @field innerH number
+--- @field containsMouse boolean
+--- @field disabled boolean
+
+local scrollStack = {}
+
 --- @class IUIScrollManager
 --- @field x number
 --- @field y number
@@ -84,9 +97,8 @@ function iui.newScrollManager()
 end
 
 --- @param name string
---- @param content fun()
 --- @param manager? IUIScrollManager
-function iui.scrollView(name, content, manager)
+function iui.scrollView(name, manager)
     local id = iui.beginID(name, false)
 
     --- @type IUIScrollViewState
@@ -103,15 +115,12 @@ function iui.scrollView(name, content, manager)
 
     local x, y, w, h = iui.layout.getBounds()
     local containsMouse = iui.layout.containsPoint()
-
     local disabled = iui.isDisabled()
 
     local scrollSize = iui.style["scrollSize"]
 
     local innerX, innerY = x + 1, y + 1
     local innerW, innerH = w - (3 + scrollSize), h - 2
-    local scrollX, scrollY = innerX + innerW + 1, innerY
-    local scrollW, scrollH = scrollSize, innerH
 
     iui.colors.sysGray200:set()
     iui.graphics.rectangle(x, y, w, h)
@@ -123,13 +132,48 @@ function iui.scrollView(name, content, manager)
     iui.draw.pushClip(innerX, innerY, innerW, innerH)
     local panel = iui.layout.beginPanel(innerX, innerY, innerW, innerH)
     panel.rowY = panel.rowY - iui.utils.round(manager.y)
-    content()
+
+    --- @type IUIScrollViewStackItem
+    local stackItem = iui.pool.get("scroll_view_stack_item")
+
+    stackItem.state = state
+    stackItem.manager = manager
+    stackItem.id = id
+    stackItem.innerX = innerX
+    stackItem.innerY = innerY
+    stackItem.innerW = innerW
+    stackItem.innerH = innerH
+    stackItem.containsMouse = containsMouse
+    stackItem.disabled = disabled
+
+    table.insert(scrollStack, stackItem)
+end
+
+function iui.endScrollView()
+    --- @type IUIScrollViewStackItem
+    local stackItem = table.remove(scrollStack)
+
+    local scrollSize = iui.style["scrollSize"]
+
+    local state = stackItem.state
+    local manager = stackItem.manager
+    local id = stackItem.id
+    local innerX = stackItem.innerX
+    local innerY = stackItem.innerY
+    local innerW = stackItem.innerW
+    local innerH = stackItem.innerH
+    local containsMouse = stackItem.containsMouse
+    local disabled = stackItem.disabled
+
+    local scrollX, scrollY = innerX + innerW + 1, innerY
+    local scrollW, scrollH = scrollSize, innerH
+
     local cw, ch = iui.layout.getContentSize()
     cw, ch = cw + manager.x, ch + iui.utils.round(manager.y)
     iui.layout.endPanel()
     iui.draw.popClip()
 
-    panel = iui.layout.beginPanel(scrollX, scrollY, scrollW, scrollH, 0)
+    iui.layout.beginPanel(scrollX, scrollY, scrollW, scrollH, 0)
     iui.layout.fillPanel()
     manager.y = iui.scrollBar("scroll", "vert", manager.y, innerH, 0, ch)
     iui.layout.endPanel()
@@ -210,4 +254,6 @@ function iui.scrollView(name, content, manager)
     manager:fixOffset()
 
     iui.endID()
+
+    iui.pool.put(stackItem)
 end
