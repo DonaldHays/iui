@@ -21,6 +21,7 @@ local iui = require(parentPath .. "iui")
 --- @field containsMouse boolean
 --- @field disabled boolean
 
+--- @type IUIScrollViewStackItem[]
 local scrollStack = {}
 
 --- @class IUIScrollManager
