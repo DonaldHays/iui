@@ -4,17 +4,22 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 --- @class IUILib
 local iui = require(parentPath .. "iui")
 
---- @param items fun()
---- @param content fun()
-function iui.menuBar(items, content)
+--- @class IUIMenuBarStackItem
+--- @field state any
+--- @field controller IUISubMenuController
+--- @field isShowingPanel boolean
+--- @field x number
+--- @field w number
+--- @field h number
+--- @field barHeight number
+
+--- @type IUIMenuBarStackItem[]
+local itemStack = {}
+
+function iui.menuBar()
     local x, y, w, h = iui.layout.getPanelBounds()
 
     local barHeight = iui.layout.getDefaultRowHeight() + 1
-
-    -- Present content below bar
-    iui.layout.beginPanel(x, barHeight, w, h - barHeight)
-    content()
-    iui.layout.endPanel()
 
     -- Draw bar
     iui.graphics.clip(x, y, w, barHeight)
@@ -90,7 +95,31 @@ function iui.menuBar(items, content)
     end
 
     iui.layout.beginIntrinsicRow(nil, nil, barHeight - 1)
-    items()
+
+    --- @type IUIMenuBarStackItem
+    local item = iui.pool.get("menu_bar_stack_item")
+    item.state = state
+    item.controller = controller
+    item.isShowingPanel = isShowingPanel
+    item.barHeight = barHeight
+    item.x = x
+    item.w = w
+    item.h = h
+
+    table.insert(itemStack, item)
+end
+
+function iui.menuBarDivider()
+    --- @type IUIMenuBarStackItem
+    local item = table.remove(itemStack)
+    local state = item.state
+    local controller = item.controller
+    local isShowingPanel = item.isShowingPanel
+    local barHeight = item.barHeight
+    local x, w, h = item.x, item.w, item.h
+
+    iui.pool.put(item)
+
     iui.layout.endPanel()
 
     iui.style.pop()
@@ -120,4 +149,11 @@ function iui.menuBar(items, content)
 
         iui.endLayer()
     end
+
+    -- Content panel
+    iui.layout.beginPanel(x, barHeight, w, h - barHeight)
+end
+
+function iui.endMenuBar()
+    iui.layout.endPanel()
 end
