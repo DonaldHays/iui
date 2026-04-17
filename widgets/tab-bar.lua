@@ -18,7 +18,7 @@ function iui.tabBar(items, content)
     iui.graphics.rectangle(x, y + barHeight - 1, w, 1)
 
     iui.layout.beginPanel(x + 1, y, w - 2, barHeight, 0)
-    iui.layout.beginRow({ kind = "intrinsic" }, barHeight)
+    iui.layout.beginIntrinsicRow(nil, nil, barHeight)
     iui.style.push()
     iui.style["spacing"] = 0
     items()

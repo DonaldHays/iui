@@ -89,7 +89,7 @@ function iui.menuBar(items, content)
         iui.layout.beginPanel(x, y, w, barHeight - 1, 0)
     end
 
-    iui.layout.beginRow({ kind = "intrinsic" }, barHeight - 1)
+    iui.layout.beginIntrinsicRow(nil, nil, barHeight - 1)
     items()
     iui.layout.endPanel()
 

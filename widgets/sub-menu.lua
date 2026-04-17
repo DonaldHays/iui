@@ -176,13 +176,13 @@ function iui.subMenu(name)
         iui.style.push()
         iui.style["subMenuController"] = controller
         iui.style["isPanelSubMenu"] = true
-        iui.layout.beginRow({ kind = "dynamic", count = 1 }, 4)
+        iui.layout.beginDynamicRow(1, 4)
         iui.layout.spacer()
 
         if state.panelW then
-            iui.layout.beginRow({ kind = "dynamic", count = 1 })
+            iui.layout.beginDynamicRow()
         else
-            iui.layout.beginRow({ kind = "intrinsic", limit = 1, default = 10 })
+            iui.layout.beginIntrinsicRow(10, 1)
         end
 
         --- @type IUISubMenuStackItem

@@ -35,7 +35,7 @@ local function listViewStep(state, idx)
         local spaced = rowHeight + spacing
 
         panel.rowY = (idx - 1) * spaced + margin - yOffset
-        iui.layout.beginRow({ kind = "dynamic", count = 1 }, rowHeight)
+        iui.layout.beginDynamicRow(1, rowHeight)
 
         return idx
     end

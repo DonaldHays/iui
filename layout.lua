@@ -3,6 +3,8 @@ local currentPath = (...):match('(.-)[^%./]+$')
 --- @class IUILib
 local iui = require(currentPath .. "iui")
 
+--- @alias IUILayoutRowKind "fixed" | "dynamic" | "intrinsic" | "mixed"
+
 --- @class (exact) IUILayoutPanel
 --- @field x number
 --- @field y number
@@ -10,7 +12,10 @@ local iui = require(currentPath .. "iui")
 --- @field h number
 --- @field margin number
 --- @field rowHeight number
---- @field columns IUIColumns
+--- @field rowKind IUILayoutRowKind
+--- @field rowData any
+--- @field intrinsicDefault? number
+--- @field intrinsicLimit? number
 --- @field rowY number
 --- @field columnX number
 --- @field wantsIntrinsicWidth boolean
@@ -27,29 +32,6 @@ local iui = require(currentPath .. "iui")
 --- @class (exact) IUIColumnXBounds
 --- @field x number
 --- @field w number
-
---- @class (exact) IUIFixedWidthColumns
---- @field kind "fixed"
---- @field size number
-
---- @class (exact) IUIDynamicWidthColumns
---- @field kind "dynamic"
---- @field count number
-
---- @class (exact) IUIIntrinsicWidthColumns
---- @field kind "intrinsic"
---- @field default? number
---- @field limit? number
-
---- @class (exact) IUIMixedWidthColumns
---- @field kind "mixed"
---- @field columns IUILayoutColumn[]
-
---- @alias IUIColumns
---- | IUIFixedWidthColumns
---- | IUIDynamicWidthColumns
---- | IUIIntrinsicWidthColumns
---- | IUIMixedWidthColumns
 
 --- @class (exact) IUILayoutColumn
 --- @field kind "fixed" | "dynamic"
@@ -82,6 +64,14 @@ function layout.getDefaultRowHeight()
     return rowHeight
 end
 
+--- @param panel IUILayoutPanel
+local function resetColumnBoundsCache(panel)
+    if panel.columnBoundsCache ~= nil then
+        iui.pool.put(panel.columnBoundsCache)
+        panel.columnBoundsCache = nil
+    end
+end
+
 --- @param x number
 --- @param y number
 --- @param w number
@@ -107,18 +97,19 @@ function layout.beginPanel(x, y, w, h, margin)
     panel.wantsIntrinsicWidth = false
     panel.wantsIntrinsicHeight = false
     panel.columnIndex = 1
-    panel.columns = {
-        kind = "dynamic",
-        count = 1
-    }
+    panel.rowKind = "dynamic"
+    panel.rowData = 1
+    panel.intrinsicDefault = nil
+    panel.intrinsicLimit = nil
     panel.contentWidth = 0
     panel.contentHeight = 0
 
     panel.intrinsicWidth = nil
     panel.intrinsicHeight = nil
     panel.columnCountCache = nil
-    panel.columnBoundsCache = nil
     panel.zStackCount = nil
+
+    resetColumnBoundsCache(panel)
 
     table.insert(panels, panel)
 
@@ -173,9 +164,9 @@ function layout.setIntrinsicHeight(h)
     panel.intrinsicHeight = h
 end
 
---- @param columns IUIColumns
 --- @param rowHeight? number
-function layout.beginRow(columns, rowHeight)
+--- @return IUILayoutPanel
+local function beginRowCommon(rowHeight)
     if rowHeight == nil then
         rowHeight = layout.getDefaultRowHeight()
     end
@@ -188,13 +179,49 @@ function layout.beginRow(columns, rowHeight)
     end
 
     panel.wantsIntrinsicHeight = false
-    panel.wantsIntrinsicWidth = columns.kind == "intrinsic"
+    panel.wantsIntrinsicWidth = false
     panel.intrinsicWidth = nil
     panel.intrinsicHeight = nil
-    panel.columns = columns
     panel.rowHeight = rowHeight
     panel.columnCountCache = nil
-    panel.columnBoundsCache = nil
+    resetColumnBoundsCache(panel)
+
+    return panel
+end
+
+--- @param count? number
+--- @param rowHeight? number
+function layout.beginDynamicRow(count, rowHeight)
+    local panel = beginRowCommon(rowHeight)
+    panel.rowKind = "dynamic"
+    panel.rowData = count or 1
+end
+
+--- @param size number
+--- @param rowHeight? number
+function layout.beginFixedRow(size, rowHeight)
+    local panel = beginRowCommon(rowHeight)
+    panel.rowKind = "fixed"
+    panel.rowData = size
+end
+
+--- @param default? number
+--- @param limit? number
+--- @param rowHeight? number
+function layout.beginIntrinsicRow(default, limit, rowHeight)
+    local panel = beginRowCommon(rowHeight)
+    panel.rowKind = "intrinsic"
+    panel.wantsIntrinsicWidth = true
+    panel.intrinsicDefault = default
+    panel.intrinsicLimit = limit
+end
+
+--- @param columns IUILayoutColumn[]
+--- @param rowHeight? number
+function layout.beginMixedRow(columns, rowHeight)
+    local panel = beginRowCommon(rowHeight)
+    panel.rowKind = "mixed"
+    panel.rowData = columns
 end
 
 --- Begins a row that causes the next widget to fill the remainder of the
@@ -208,7 +235,7 @@ function layout.fillPanel()
     end
 
     local h = panel.h - (panel.rowY + panel.margin)
-    layout.beginRow({ kind = "dynamic", count = 1 }, h)
+    layout.beginDynamicRow(1, h)
 end
 
 function layout.beginZStack()
@@ -239,22 +266,22 @@ function layout.getBounds()
     local spacing = iui.style["spacing"]
 
     local x, w = 0, 0
-    local columns = panel.columns
-    if columns.kind == "fixed" then
-        w = columns.size
+    local rowKind = panel.rowKind
+    if rowKind == "fixed" then
+        w = panel.rowData
         x = margin + (panel.columnIndex - 1) * (w + spacing)
-    elseif columns.kind == "dynamic" then
-        local count = columns.count
+    elseif rowKind == "dynamic" then
+        local count = panel.rowData
         w = (panel.w - (2 * margin + (count - 1) * spacing)) / count
         x = margin + (panel.columnIndex - 1) * (w + spacing)
 
         local maxX = iui.utils.round(x + w)
         x = iui.utils.round(x)
         w = maxX - x
-    elseif columns.kind == "intrinsic" then
+    elseif rowKind == "intrinsic" then
         local edge = panel.w - panel.margin
         x = panel.columnX
-        w = panel.intrinsicWidth or columns.default or (edge - x)
+        w = panel.intrinsicWidth or panel.intrinsicDefault or (edge - x)
         if x + w > edge and panel.columnIndex ~= 1 then
             x = panel.margin
             panel.columnIndex = 1
@@ -262,7 +289,7 @@ function layout.getBounds()
             y = panel.rowY
         end
         panel.intrinsicWidth = w
-    elseif columns.kind == "mixed" then
+    elseif rowKind == "mixed" then
         if panel.columnBoundsCache == nil then
             --- The sum of dynamic column `size` values.
             local dynamicSum = 0
@@ -272,14 +299,17 @@ function layout.getBounds()
             --- columns are accounted for.
             local dynamicSpace = panel.w - margin * 2
 
+            --- @type IUILayoutColumn[]
+            local columns = panel.rowData
+
             -- Do a first pass through the columns, calculating the dynamic sum
             -- and space values.
-            for idx = 1, #columns.columns do
+            for idx = 1, #columns do
                 if idx > 1 then
                     dynamicSpace = dynamicSpace - spacing
                 end
 
-                local column = columns.columns[idx]
+                local column = columns[idx]
                 if column.kind == "dynamic" then
                     dynamicSum = dynamicSum + column.size
                 elseif column.kind == "fixed" then
@@ -288,10 +318,15 @@ function layout.getBounds()
             end
 
             --- @type IUIColumnXBounds[]
-            local bounds = {}
+            local bounds = iui.pool.get("layout_column_bounds_cache")
+            for index, entry in ipairs(bounds) do
+                iui.pool.put(entry)
+                bounds[index] = nil
+            end
+
             local head = margin
-            for idx = 1, #columns.columns do
-                local column = columns.columns[idx]
+            for idx = 1, #columns do
+                local column = columns[idx]
                 local colX = head
                 local colW = 0
                 if column.kind == "fixed" then
@@ -305,7 +340,10 @@ function layout.getBounds()
                 maxX = iui.utils.round(maxX)
                 colW = maxX - colX
                 --- @type IUIColumnXBounds
-                local value = { x = colX, w = colW }
+                local value = iui.pool.get("layout_column_bounds_entry")
+                value.x = colX
+                value.w = colW
+
                 table.insert(bounds, value)
             end
 
@@ -378,33 +416,33 @@ function layout.advance()
 
     local spacing = iui.style["spacing"]
 
-    local columns = panel.columns
+    local rowKind = panel.rowKind
     local count = panel.columnCountCache
 
     if count == nil then
-        if columns.kind == "fixed" then
+        if rowKind == "fixed" then
             local num = panel.w + spacing - panel.margin * 2
-            local den = columns.size + spacing
+            local den = panel.rowData + spacing
             count = math.floor(num / den)
             if count < 1 then
                 count = 1
             end
-        elseif columns.kind == "dynamic" then
-            count = columns.count
-        elseif columns.kind == "mixed" then
-            count = #columns.columns
+        elseif rowKind == "dynamic" then
+            count = panel.rowData
+        elseif rowKind == "mixed" then
+            count = #panel.rowData
         end
 
         panel.columnCountCache = count
     end
 
-    if columns.kind == "intrinsic" then
+    if rowKind == "intrinsic" then
         panel.columnIndex = panel.columnIndex + 1
         panel.columnX = panel.columnX + spacing + (panel.intrinsicWidth or 0)
         panel.intrinsicWidth = nil
         panel.intrinsicHeight = nil
 
-        if columns.limit and panel.columnIndex >= columns.limit then
+        if panel.intrinsicLimit and panel.columnIndex >= panel.intrinsicLimit then
             panel.columnIndex = 1
             panel.columnX = panel.margin
             panel.rowY = panel.rowY + panel.rowHeight + spacing
