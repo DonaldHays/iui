@@ -23,11 +23,11 @@ function style.load()
 end
 
 function style.beginFrame()
-    table.insert(stack, {})
+    style.push()
 end
 
 function style.endFrame()
-    table.remove(stack)
+    style.pop()
 
     if #stack ~= 1 then
         error("Unbalanced style stack: expected 1, got " .. #stack)
@@ -35,11 +35,18 @@ function style.endFrame()
 end
 
 function style.push()
-    table.insert(stack, {})
+    local entry = iui.pool.get("style_stack_entry")
+    for key, _ in pairs(entry) do
+        if key ~= "_typename" then
+            entry[key] = nil
+        end
+    end
+
+    table.insert(stack, entry)
 end
 
 function style.pop()
-    table.remove(stack)
+    iui.pool.put(table.remove(stack))
 end
 
 setmetatable(style, {
