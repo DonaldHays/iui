@@ -7,13 +7,22 @@ local iui = require(parentPath .. "iui")
 --- @alias IUISplitViewDirection "horiz" | "vert"
 --- @alias IUISplitViewSide "min" | "max"
 
+--- @class (exact) IUISplitStackItem
+--- @field direction IUISplitViewDirection
+--- @field current number
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+
+--- @type IUISplitStackItem[]
+local splitStack = {}
+
 --- @param name string
 --- @param direction IUISplitViewDirection
 --- @param current number
---- @param first fun()
---- @param second fun()
 --- @return number
-function iui.splitView(name, direction, current, first, second)
+function iui.splitView(name, direction, current)
     local id = iui.beginID(name, false)
     local state = iui.state(id)
 
@@ -114,27 +123,45 @@ function iui.splitView(name, direction, current, first, second)
 
     if direction == "horiz" then
         iui.layout.beginPanel(x, y, current, h)
-        first()
-        iui.layout.endPanel()
-
-        iui.layout.beginPanel(x + current + 1, y, w - (current + 1), h)
-        second()
-        iui.layout.endPanel()
     elseif direction == "vert" then
         iui.layout.beginPanel(x, y, w, current)
-        first()
-        iui.layout.endPanel()
-
-        iui.layout.beginPanel(x, y + current + 1, w, h - (current + 1))
-        second()
-        iui.layout.endPanel()
     end
 
-    iui.endID()
+    --- @type IUISplitStackItem
+    local item = iui.pool.get("split_view_stack_item")
+    item.direction = direction
+    item.current = current
+    item.x, item.y, item.w, item.h = x, y, w, h
+
+    table.insert(splitStack, item)
 
     if splitSide == "max" then
         current = w - current
     end
 
     return current
+end
+
+function iui.splitViewDivider()
+    --- @type IUISplitStackItem
+    local item = table.remove(splitStack)
+    local direction = item.direction
+    local x, y, w, h = item.x, item.y, item.w, item.h
+    local current = item.current
+
+    iui.layout.endPanel()
+
+    if direction == "horiz" then
+        iui.layout.beginPanel(x + current + 1, y, w - (current + 1), h)
+    elseif direction == "vert" then
+        iui.layout.beginPanel(x, y + current + 1, w, h - (current + 1))
+    end
+
+    iui.pool.put(item)
+end
+
+function iui.endSplitView()
+    iui.layout.endPanel()
+
+    iui.endID()
 end
