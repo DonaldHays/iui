@@ -31,6 +31,7 @@ local scrollStack = {}
 --- @field contentHeight number
 --- @field clipWidth number
 --- @field clipHeight number
+--- @field shouldInterruptAnimation boolean
 local ScrollManager = {}
 ScrollManager.__index = ScrollManager
 
@@ -76,6 +77,7 @@ function ScrollManager:scrollTo(x, y, w, h)
 
     self.x = minX
     self.y = minY
+    self.shouldInterruptAnimation = true
 
     self:fixOffset()
 end
@@ -93,6 +95,7 @@ function iui.newScrollManager()
     out.contentHeight = 0
     out.clipWidth = 0
     out.clipHeight = 0
+    out.shouldInterruptAnimation = false
 
     return out
 end
@@ -179,6 +182,11 @@ function iui.endScrollView()
     manager.y = iui.scrollBar("scroll", "vert", manager.y, innerH, 0, ch)
     iui.layout.endPanel()
     iui.layout.endZStack()
+
+    if manager.shouldInterruptAnimation then
+        manager.shouldInterruptAnimation = false
+        state.vy = 0
+    end
 
     if state.vy ~= nil and state.vy ~= 0 then
         manager.y = manager.y + state.vy * iui.dt
