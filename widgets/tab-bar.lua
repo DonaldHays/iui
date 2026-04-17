@@ -4,9 +4,17 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 --- @class IUILib
 local iui = require(parentPath .. "iui")
 
---- @param items fun()
---- @param content fun()
-function iui.tabBar(items, content)
+--- @class IUITabBarStackItem
+--- @field barHeight number
+--- @field x number
+--- @field y number
+--- @field w number
+--- @field h number
+
+--- @type IUITabBarStackItem[]
+local itemStack = {}
+
+function iui.tabBar()
     local x, y, w, h = iui.layout.getPanelBounds()
 
     local barHeight = iui.layout.getDefaultRowHeight() + 1
@@ -21,12 +29,28 @@ function iui.tabBar(items, content)
     iui.layout.beginIntrinsicRow(nil, nil, barHeight)
     iui.style.push()
     iui.style["spacing"] = 0
-    items()
+
+    --- @type IUITabBarStackItem
+    local item = iui.pool.get("tab_bar_stack_item")
+    item.barHeight = barHeight
+    item.x, item.y, item.w, item.h = x, y, w, h
+    table.insert(itemStack, item)
+end
+
+function iui.tabBarDivider()
+    --- @type IUITabBarStackItem
+    local item = table.remove(itemStack)
+    local barHeight = item.barHeight
+    local x, y, w, h = item.x, item.y, item.w, item.h
+    iui.pool.put(item)
+
     iui.style.pop()
     iui.layout.endPanel()
 
     iui.layout.beginPanel(x, y + barHeight, w, h - barHeight)
-    content()
+end
+
+function iui.endTabBar()
     iui.layout.endPanel()
 end
 
