@@ -36,8 +36,7 @@ setmetatable(draw --[[@as any]], {
             error("IUI no longer takes draw blocks")
         else
             iui.graphics.beginDraw(ctx.width, ctx.height)
-            for index, context in ipairs(ctx.drawContexts) do
-                iui.layer.willDrawLayer(index)
+            for _, context in ipairs(ctx.drawContexts) do
                 for _, command in ipairs(context.commands) do
                     command.commit(command)
                     iui.pool.put(command)

@@ -132,5 +132,5 @@ end
 --- @param id number
 --- @return boolean
 function iui.isFocused(id)
-    return iui.layer.getFocusID() == id
+    return iui.layer.isTop() and iui.layer.getFocusID() == id
 end

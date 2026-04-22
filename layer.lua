@@ -14,7 +14,6 @@ local layer = {}
 --- @field newLayers IUILayer[]
 --- @field layerIndex number
 --- @field isUnwinding boolean
---- @field isDrawing boolean
 
 local ctx --- @type IUILayerRootContext
 
@@ -38,8 +37,7 @@ function layer.newRootContext()
         layers = {},
         newLayers = {},
         layerIndex = 0,
-        isUnwinding = false,
-        isDrawing = false
+        isUnwinding = false
     }
 end
 
@@ -49,7 +47,6 @@ function layer.setRootContext(rootContext)
 end
 
 function layer.beginFrame()
-    ctx.isDrawing = false
     ctx.layerIndex = 0
     ctx.newLayers = {}
     iui.beginLayer("__root")
@@ -64,9 +61,7 @@ end
 
 --- @return number? id
 function layer.getFocusID()
-    if (not ctx.isDrawing) or (ctx.layerIndex == #ctx.newLayers) then
-        return layer.getCurrentLayer().focusID
-    end
+    return layer.getCurrentLayer().focusID
 end
 
 --- @param id? number
@@ -84,9 +79,9 @@ function layer.setLastID(id)
     layer.getCurrentLayer().lastID = id
 end
 
-function layer.willDrawLayer(index)
-    ctx.isDrawing = true
-    ctx.layerIndex = index
+--- @return boolean
+function layer.isTop()
+    return ctx.layerIndex == #ctx.layers
 end
 
 function iui.beginLayer(name)
