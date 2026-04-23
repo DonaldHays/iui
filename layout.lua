@@ -381,21 +381,15 @@ function layout.containsPoint(x, y)
     y = y or iui.input.mouse.y
 
     local bx, by, bw, bh = layout.getBounds()
-    if x < bx or y < by then
-        return false
-    end
-
-    if x >= bx + bw or y >= by + bh then
+    if not iui.utils.rectContains(bx, by, bw, bh, x, y) then
         return false
     end
 
     local cx, cy, cw, ch = iui.draw.getClipBounds()
     if cx then
-        if x < cx or y < cy then
-            return false
-        end
-
-        if x >= cx + cw or y >= cy + ch then
+        if not iui.utils.rectContains(
+                cx, cy --[[@as any]], cw --[[@as any]], ch --[[@as any]], x, y
+            ) then
             return false
         end
     end

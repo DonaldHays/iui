@@ -5,18 +5,30 @@ local parentPath = currentPath:match('(.-)[^%./]+%.$')
 local iui = require(parentPath .. "iui")
 
 --- @class (exact) IUIListViewStackItem
+--- @field manager IUIListManager
+--- @field isMouseInBounds boolean
 --- @field maxIndex number
 --- @field panel IUILayoutPanel
 --- @field spacing number
 --- @field margin number
 --- @field rowHeight number
 --- @field yOffset number
+--- @field lastX? number
+--- @field lastY? number
+--- @field lastW? number
+--- @field lastH? number
 
 --- @type IUIListViewStackItem[]
 local listStack = {}
 
 --- @class IUIListManager: IUIScrollManager
 --- @field rowHeight? number
+--- @field margin? number
+--- @field spacing? number
+--- @field selection IUISet<number>
+--- @field allowsSelection boolean
+--- @field allowsMultipleSelection boolean
+--- @field allowsEmptySelection boolean
 local ListManager = {}
 ListManager.__index = ListManager
 setmetatable(ListManager, iui.ScrollManager)
@@ -24,6 +36,20 @@ setmetatable(ListManager, iui.ScrollManager)
 --- @param state IUIListViewStackItem
 --- @param idx number
 local function listViewStep(state, idx)
+    local manager = state.manager
+    if manager.allowsSelection and state.isMouseInBounds then
+        if iui.activeID == nil and iui.input.mouse.pressed:has(1) then
+            local x, y, w, h = state.lastX, state.lastY, state.lastW, state.lastH
+            if x then
+                local mx, my = iui.input.mouse.x, iui.input.mouse.y
+                if iui.utils.rectContains(x, y --[[@as any]], w --[[@as any]], h --[[@as any]], mx, my) then
+                    manager.selection:removeAll()
+                    manager.selection:put(idx)
+                end
+            end
+        end
+    end
+
     idx = idx + 1
     if idx <= state.maxIndex then
         local panel = state.panel
@@ -37,6 +63,17 @@ local function listViewStep(state, idx)
         panel.rowY = (idx - 1) * spaced + margin - yOffset
         iui.layout.beginDynamicRow(1, rowHeight)
 
+        local x, y, w, h = iui.layout.getBounds()
+        x = x - margin
+        w = w + margin * 2
+
+        state.lastX, state.lastY, state.lastW, state.lastH = x, y, w, h
+
+        if manager.selection:has(idx) then
+            iui.colors.sysAccent500:set()
+            iui.graphics.rectangle(x, y, w, h)
+        end
+
         return idx
     end
 end
@@ -44,12 +81,11 @@ end
 --- @param index number
 function ListManager:scrollToIndex(index)
     local rowHeight = self.rowHeight
+    local margin = self.margin
+    local spacing = self.spacing
     if rowHeight == nil then
         return
     end
-
-    local margin = iui.style["margin"]
-    local spacing = iui.style["spacing"]
 
     local top = margin + (index - 1) * (rowHeight + spacing)
 
@@ -62,6 +98,11 @@ function iui.newListManager()
 
     --- @type IUIListManager
     local out = setmetatable(super --[[@as any]], ListManager)
+
+    out.selection = iui.set.new()
+    out.allowsSelection = true
+    out.allowsEmptySelection = true
+    out.allowsMultipleSelection = false
 
     return out
 end
@@ -79,6 +120,7 @@ function iui.listView(name, count, rowHeight, manager)
     local spacing = iui.style["spacing"]
 
     local spaced = rowHeight + spacing
+    local isMouseInBounds = iui.layout.containsPoint()
 
     if not manager then
         manager = state.manager
@@ -90,6 +132,8 @@ function iui.listView(name, count, rowHeight, manager)
     end
 
     manager.rowHeight = rowHeight
+    manager.margin = margin
+    manager.spacing = spacing
 
     iui.scrollView("ScrollView", manager)
 
@@ -113,6 +157,8 @@ function iui.listView(name, count, rowHeight, manager)
             math.ceil((yOffset + panel.h - margin) / spaced), count
         )
 
+        item.manager = manager
+        item.isMouseInBounds = isMouseInBounds
         item.panel = panel
         item.margin = margin
         item.spacing = spacing

@@ -42,6 +42,25 @@ function utils.clamp(n, low, high)
     return n
 end
 
+--- @param rx number
+--- @param ry number
+--- @param rw number
+--- @param rh number
+--- @param px number
+--- @param py number
+--- @return boolean isInside
+function utils.rectContains(rx, ry, rw, rh, px, py)
+    if px < rx or py < ry then
+        return false
+    end
+
+    if px >= rx + rw or py >= ry + rh then
+        return false
+    end
+
+    return true
+end
+
 --- @param iw number
 --- @param ih number
 --- @param x number
