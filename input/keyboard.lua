@@ -74,4 +74,13 @@ function keyboard.setActive(active)
     keyboard.__index = active and ctx.storage or ctx.disabledStorage
 end
 
+--- @return string keycode
+function keyboard.getPrimaryModifierKeycode()
+    if iui.backend.system.getOS() == "macOS" then
+        return "lgui"
+    else
+        return "lctrl"
+    end
+end
+
 return keyboard --[[@as IUIKeyboard]]

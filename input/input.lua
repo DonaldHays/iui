@@ -34,6 +34,7 @@ local input = {
 --- @field setRootContext fun(rootContext: IUIRootContext)
 --- @field endFrame fun()
 --- @field setActive fun(active: boolean)
+--- @field getPrimaryModifierKeycode fun(): string
 --- @overload fun(event: IUIKeyEvent, keycode: string, isRepeat: boolean)
 
 --- @type IUIMouse
