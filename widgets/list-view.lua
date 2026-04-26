@@ -13,10 +13,10 @@ local iui = require(parentPath .. "iui")
 --- @field margin number
 --- @field rowHeight number
 --- @field yOffset number
---- @field lastX? number
---- @field lastY? number
---- @field lastW? number
---- @field lastH? number
+--- @field lastX number
+--- @field lastY number
+--- @field lastW number
+--- @field lastH number
 
 --- @type IUIListViewStackItem[]
 local listStack = {}
@@ -33,25 +33,97 @@ local ListManager = {}
 ListManager.__index = ListManager
 setmetatable(ListManager, iui.ScrollManager)
 
+--- @return boolean
+local function isHoldingMeta()
+    local keyboard = iui.input.keyboard
+    local down = keyboard.down
+    local primary = keyboard.getPrimaryModifierKeycode()
+
+    return down:has("lshift") or down:has(primary)
+end
+
+--- @param state IUIListViewStackItem
+--- @param idx number
+local function updateSelection(state, idx)
+    local manager = state.manager
+
+    -- Selection can only change if the list allows selection at all, and the
+    -- pointer is inside the widget.
+    if not manager.allowsSelection or not state.isMouseInBounds then
+        return
+    end
+
+    -- Did the mouse begin being pressed this frame, and has no widget
+    -- claimed the pointer?
+    --
+    -- This `if` clause here is why we do all the selection change logic at
+    -- the beginning of `listViewStep`. The *previous* row will have been
+    -- generated, and any widgets inside them will have been given the
+    -- opportunity to claim the active id.
+    if iui.activeID ~= nil or not iui.input.mouse.pressed:has(1) then
+        return
+    end
+
+    -- As a base case, this method will be called before the first row has been
+    -- generated, and we need to exit out of that case. The "last" row bounds
+    -- will not exist yet, because there hasn't been a "last" row yet.
+    local x, y, w, h = state.lastX, state.lastY, state.lastW, state.lastH
+    if not x then
+        return
+    end
+
+    -- We already know the mouse is in the list view's bounds, now we just need
+    -- to make sure it's in the row's bounds.
+    local mx, my = iui.input.mouse.x, iui.input.mouse.y
+    if not iui.utils.rectContains(x, y, w, h, mx, my) then
+        return
+    end
+
+    local selection = manager.selection
+
+    -- Is this row already part of the selection?
+    if selection:has(idx) then
+        local count = selection:getCount()
+
+        -- Do we have multiple items already selected?
+        if count > 1 then
+            -- If the user's holding the modifier key, remove only this item
+            -- from the selection. Otherwise, remove every item *but* this one.
+            if isHoldingMeta() then
+                selection:remove(idx)
+            else
+                selection:removeAll()
+                selection:put(idx)
+            end
+        elseif manager.allowsEmptySelection then
+            -- If this row is selected, and it's the only item in the selection,
+            -- we can only remove it if we're allowed to have an empty
+            -- selection.
+            selection:remove(idx)
+        end
+    else
+        -- This row is not selected, so we need to add it to the selection.
+
+        -- In general, clicking a row should remove every row from the
+        -- selection, and then select the new row. But if multiple selection is
+        -- allowed, and the user's holding an appropriate modifier key, the new
+        -- row should be added to the existing selection instead.
+        if not manager.allowsMultipleSelection or not isHoldingMeta() then
+            selection:removeAll()
+        end
+
+        selection:put(idx)
+    end
+end
+
 --- @param state IUIListViewStackItem
 --- @param idx number
 local function listViewStep(state, idx)
-    local manager = state.manager
-    if manager.allowsSelection and state.isMouseInBounds then
-        if iui.activeID == nil and iui.input.mouse.pressed:has(1) then
-            local x, y, w, h = state.lastX, state.lastY, state.lastW, state.lastH
-            if x then
-                local mx, my = iui.input.mouse.x, iui.input.mouse.y
-                if iui.utils.rectContains(x, y --[[@as any]], w --[[@as any]], h --[[@as any]], mx, my) then
-                    manager.selection:removeAll()
-                    manager.selection:put(idx)
-                end
-            end
-        end
-    end
+    updateSelection(state, idx)
 
     idx = idx + 1
     if idx <= state.maxIndex then
+        local manager = state.manager
         local panel = state.panel
         local spacing = state.spacing
         local margin = state.margin
