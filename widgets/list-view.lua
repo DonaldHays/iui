@@ -26,6 +26,8 @@ local listStack = {}
 --- @field margin? number
 --- @field spacing? number
 --- @field selection IUISet<number>
+--- @field rangeStartIndex? number
+--- @field rangeEndIndex? number
 --- @field allowsSelection boolean
 --- @field allowsMultipleSelection boolean
 --- @field allowsEmptySelection boolean
@@ -33,13 +35,27 @@ local ListManager = {}
 ListManager.__index = ListManager
 setmetatable(ListManager, iui.ScrollManager)
 
+--- Returns whether the user is holding down a modifier input that indicates
+--- they wish to add or remove single items from the selection.
+---
 --- @return boolean
-local function isHoldingMeta()
+local function isHoldingSingleModifier()
     local keyboard = iui.input.keyboard
     local down = keyboard.down
     local primary = keyboard.getPrimaryModifierKeycode()
 
-    return down:has("lshift") or down:has(primary)
+    return down:has(primary)
+end
+
+--- Returns whether the user is holding down a modifier input that indicates
+--- they wish to add or remove a range of items from the selection.
+---
+--- @return boolean
+local function isHoldingRangeModifier()
+    local keyboard = iui.input.keyboard
+    local down = keyboard.down
+
+    return down:has("lshift")
 end
 
 --- @param state IUIListViewStackItem
@@ -87,32 +103,100 @@ local function updateSelection(state, idx)
 
         -- Do we have multiple items already selected?
         if count > 1 then
-            -- If the user's holding the modifier key, remove only this item
-            -- from the selection. Otherwise, remove every item *but* this one.
-            if isHoldingMeta() then
+            if isHoldingSingleModifier() then
+                -- If there's multiple selected items, and the user is holding
+                -- the single item modifier, we just remove the one item.
                 selection:remove(idx)
+                manager.rangeStartIndex = nil
+                manager.rangeEndIndex = nil
+            elseif isHoldingRangeModifier() then
+                -- If there's multiple selected items, and the user is holding
+                -- the range modifier, we add a range of items, unwinding the
+                -- previous range if necessary.
+                local startIndex = manager.rangeStartIndex or 1
+                local endIndex = manager.rangeEndIndex
+
+                -- Undo the previous range.
+                if endIndex and endIndex ~= startIndex then
+                    local sign = iui.utils.sign(endIndex - startIndex)
+                    for index = startIndex, endIndex, sign do
+                        selection:remove(index)
+                    end
+                end
+
+                -- Add the new range.
+                local sign = iui.utils.sign(idx - startIndex)
+                if sign == 0 then
+                    selection:put(idx)
+                else
+                    for index = startIndex, idx, sign do
+                        selection:put(index)
+                    end
+                end
+
+                manager.rangeEndIndex = idx
             else
+                -- If there's multiple items in the range, the user's clicking
+                -- a selected item, and they're not holding any modifiers, we
+                -- replace the entire selection with just this item.
                 selection:removeAll()
                 selection:put(idx)
+                manager.rangeStartIndex = idx
+                manager.rangeEndIndex = nil
             end
         elseif manager.allowsEmptySelection then
             -- If this row is selected, and it's the only item in the selection,
             -- we can only remove it if we're allowed to have an empty
             -- selection.
             selection:remove(idx)
+            manager.rangeStartIndex = nil
+            manager.rangeEndIndex = nil
         end
     else
         -- This row is not selected, so we need to add it to the selection.
 
-        -- In general, clicking a row should remove every row from the
-        -- selection, and then select the new row. But if multiple selection is
-        -- allowed, and the user's holding an appropriate modifier key, the new
-        -- row should be added to the existing selection instead.
-        if not manager.allowsMultipleSelection or not isHoldingMeta() then
-            selection:removeAll()
-        end
+        if manager.allowsMultipleSelection and isHoldingSingleModifier() then
+            -- Multiple selection is allowed, and the single item modifier is
+            -- held, so we just add the current index.
+            selection:put(idx)
 
-        selection:put(idx)
+            manager.rangeStartIndex = idx
+            manager.rangeEndIndex = nil
+        elseif manager.allowsMultipleSelection and isHoldingRangeModifier() then
+            -- Multiple selection is allowed, and the range modifier is held, so
+            -- we add a range of items, unwinding the previous range if
+            -- necessary.
+            local startIndex = manager.rangeStartIndex or 1
+            local endIndex = manager.rangeEndIndex
+
+            -- Undo the previous range.
+            if endIndex and endIndex ~= startIndex then
+                local sign = iui.utils.sign(endIndex - startIndex)
+                for index = startIndex, endIndex, sign do
+                    selection:remove(index)
+                end
+            end
+
+            -- Add the new range.
+            local sign = iui.utils.sign(idx - startIndex)
+            if sign == 0 then
+                selection:put(idx)
+            else
+                for index = startIndex, idx, sign do
+                    selection:put(index)
+                end
+            end
+
+            manager.rangeEndIndex = idx
+        else
+            -- Either multiple selection is disallowed, or no modifier is held,
+            -- so replace the entire selection with this index.
+            selection:removeAll()
+            selection:put(idx)
+
+            manager.rangeStartIndex = idx
+            manager.rangeEndIndex = nil
+        end
     end
 end
 
