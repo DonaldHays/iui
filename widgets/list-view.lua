@@ -21,6 +21,15 @@ local iui = require(parentPath .. "iui")
 --- @type IUIListViewStackItem[]
 local listStack = {}
 
+--- The amount of time, in seconds, to wait to select an item when pressing and
+--- holding in VR.
+local selectDelay = 0.2
+
+--- @class (exact) IUIListSelectionChangeMutation
+--- @field selection IUISet<number>
+--- @field rangeStartIndex? number
+--- @field rangeEndIndex? number
+
 --- @class IUIListManager: IUIScrollManager
 --- @field rowHeight? number
 --- @field margin? number
@@ -31,9 +40,26 @@ local listStack = {}
 --- @field allowsSelection boolean
 --- @field allowsMultipleSelection boolean
 --- @field allowsEmptySelection boolean
+--- @field selectTimer? number
+--- @field timerIndex? number
+--- @field conditionalMutation? IUIListSelectionChangeMutation
 local ListManager = {}
 ListManager.__index = ListManager
 setmetatable(ListManager, iui.ScrollManager)
+
+function ListManager:beganDragging()
+    self.selectTimer = nil
+    self.timerIndex = nil
+
+    local mutation = self.conditionalMutation
+    self.conditionalMutation = nil
+    if mutation then
+        self.selection:removeAll()
+        self.selection:putAll(mutation.selection)
+        self.rangeStartIndex = mutation.rangeStartIndex
+        self.rangeEndIndex = mutation.rangeEndIndex
+    end
+end
 
 --- Returns whether the user is holding down a modifier input that indicates
 --- they wish to add or remove single items from the selection.
@@ -58,44 +84,24 @@ local function isHoldingRangeModifier()
     return down:has("lshift")
 end
 
---- @param state IUIListViewStackItem
+--- @param manager IUIListManager
 --- @param idx number
-local function updateSelection(state, idx)
-    local manager = state.manager
-
-    -- Selection can only change if the list allows selection at all, and the
-    -- pointer is inside the widget.
-    if not manager.allowsSelection or not state.isMouseInBounds then
-        return
-    end
-
-    -- Did the mouse begin being pressed this frame, and has no widget
-    -- claimed the pointer?
-    --
-    -- This `if` clause here is why we do all the selection change logic at
-    -- the beginning of `listViewStep`. The *previous* row will have been
-    -- generated, and any widgets inside them will have been given the
-    -- opportunity to claim the active id.
-    if iui.activeID ~= nil or not iui.input.mouse.pressed:has(1) then
-        return
-    end
-
-    -- As a base case, this method will be called before the first row has been
-    -- generated, and we need to exit out of that case. The "last" row bounds
-    -- will not exist yet, because there hasn't been a "last" row yet.
-    local x, y, w, h = state.lastX, state.lastY, state.lastW, state.lastH
-    if not x then
-        return
-    end
-
-    -- We already know the mouse is in the list view's bounds, now we just need
-    -- to make sure it's in the row's bounds.
-    local mx, my = iui.input.mouse.x, iui.input.mouse.y
-    if not iui.utils.rectContains(x, y, w, h, mx, my) then
-        return
-    end
+--- @return IUIListSelectionChangeMutation? mutation
+local function applySelection(manager, idx, returnMutation)
+    --- @type IUIListSelectionChangeMutation?
+    local mutation = nil
 
     local selection = manager.selection
+
+    if returnMutation then
+        mutation = {
+            selection = iui.set.new(),
+            rangeStartIndex = manager.rangeStartIndex,
+            rangeEndIndex = manager.rangeEndIndex,
+        }
+
+        mutation.selection:putAll(selection)
+    end
 
     -- Is this row already part of the selection?
     if selection:has(idx) then
@@ -198,6 +204,54 @@ local function updateSelection(state, idx)
             manager.rangeEndIndex = nil
         end
     end
+
+    return mutation
+end
+
+--- @param state IUIListViewStackItem
+--- @param idx number
+local function updateSelection(state, idx)
+    local manager = state.manager
+
+    -- Selection can only change if the list allows selection at all, and the
+    -- pointer is inside the widget.
+    if not manager.allowsSelection or not state.isMouseInBounds then
+        return
+    end
+
+    -- Did the mouse begin being pressed this frame, and has no widget
+    -- claimed the pointer?
+    --
+    -- This `if` clause here is why we do all the selection change logic at
+    -- the beginning of `listViewStep`. The *previous* row will have been
+    -- generated, and any widgets inside them will have been given the
+    -- opportunity to claim the active id.
+    if iui.activeID ~= nil or not iui.input.mouse.pressed:has(1) then
+        return
+    end
+
+    -- As a base case, this method will be called before the first row has been
+    -- generated, and we need to exit out of that case. The "last" row bounds
+    -- will not exist yet, because there hasn't been a "last" row yet.
+    local x, y, w, h = state.lastX, state.lastY, state.lastW, state.lastH
+    if not x then
+        return
+    end
+
+    -- We already know the mouse is in the list view's bounds, now we just need
+    -- to make sure it's in the row's bounds.
+    local mx, my = iui.input.mouse.x, iui.input.mouse.y
+    if not iui.utils.rectContains(x, y, w, h, mx, my) then
+        return
+    end
+
+    if iui.idiom == "vr" then
+        manager.selectTimer = selectDelay
+        manager.timerIndex = idx
+        manager.conditionalMutation = nil
+    else
+        applySelection(manager, idx, false)
+    end
 end
 
 --- @param state IUIListViewStackItem
@@ -290,6 +344,26 @@ function iui.listView(name, count, rowHeight, manager)
     manager.rowHeight = rowHeight
     manager.margin = margin
     manager.spacing = spacing
+
+    if not iui.input.mouse.down:has(1) then
+        if manager.selectTimer then
+            applySelection(manager, manager.timerIndex, false)
+        end
+
+        manager.selectTimer = nil
+        manager.timerIndex = nil
+        manager.conditionalMutation = nil
+    end
+
+    if manager.selectTimer then
+        manager.selectTimer = manager.selectTimer - iui.dt
+        if manager.selectTimer <= 0 then
+            manager.selectTimer = nil
+            manager.conditionalMutation = applySelection(
+                manager, manager.timerIndex, true
+            )
+        end
+    end
 
     iui.scrollView("ScrollView", manager)
 

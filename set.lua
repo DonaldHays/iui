@@ -8,6 +8,7 @@ local iui = require(currentPath .. "iui")
 --- @field private storage table<T, true>
 --- @field new fun(): IUISet<T> Returns a new set.
 --- @field put fun(self: self, v: T) Inserts `v`, if not already present.
+--- @field putAll fun(self: self, s: IUISet<T>) Inserts all members of `s`.
 --- @field remove fun(self: self, v: T) Removes `v`, if present.
 --- @field removeAll fun(self: self) Removes all values.
 --- @field has fun(self: self, v: T): boolean Returns whether the set has `v`.
@@ -27,6 +28,13 @@ end
 
 function Set:put(v)
     self.storage[v] = true
+end
+
+function Set:putAll(s)
+    local storage = self.storage
+    for k, _ in pairs(s.storage) do
+        storage[k] = true
+    end
 end
 
 function Set:remove(v)

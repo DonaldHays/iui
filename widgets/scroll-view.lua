@@ -32,6 +32,7 @@ local scrollStack = {}
 --- @field clipWidth number
 --- @field clipHeight number
 --- @field shouldInterruptAnimation boolean
+--- @field beganDragging? fun(self: IUIScrollManager)
 local ScrollManager = {}
 ScrollManager.__index = ScrollManager
 
@@ -235,6 +236,9 @@ function iui.endScrollView()
                 if math.abs(dy) > 15 then
                     state.dragOrigin = nil
                     state.isDragging = true
+                    if manager.beganDragging then
+                        manager:beganDragging()
+                    end
                     iui.becomeActive(id)
                 end
             end
