@@ -41,12 +41,12 @@ function input.text(s)
     end
 end
 
---- @param rootContext IUIRootContext
-function input.setRootContext(rootContext)
-    ctx = rootContext.input
+--- @param windowManager IUIWindowManager
+function input.setWindowManager(windowManager)
+    ctx = windowManager.input
 
-    input.keyboard.setRootContext(rootContext)
-    input.mouse.setRootContext(rootContext)
+    input.keyboard.setWindowManager(windowManager)
+    input.mouse.setWindowManager(windowManager)
 end
 
 function input.endFrame()

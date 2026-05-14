@@ -41,9 +41,9 @@ function layer.newRootContext()
     }
 end
 
---- @param rootContext IUIRootContext
-function layer.setRootContext(rootContext)
-    ctx = rootContext.layer
+--- @param windowManager IUIWindowManager
+function layer.setWindowManager(windowManager)
+    ctx = windowManager.layer
 end
 
 function layer.beginFrame()

@@ -9,7 +9,7 @@ iui.resourcePath = resourcePath
 require(currentPath .. "utils")
 require(currentPath .. "set")
 require(currentPath .. "pool")
-require(currentPath .. "root-context")
+require(currentPath .. "window-manager")
 require(currentPath .. "color")
 require(currentPath .. "input")
 require(currentPath .. "id")

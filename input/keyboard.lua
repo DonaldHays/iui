@@ -53,9 +53,9 @@ function keyboard.newRootContext()
     }
 end
 
---- @param rootContext IUIRootContext
-function keyboard.setRootContext(rootContext)
-    ctx = rootContext.input.keyboard
+--- @param windowManager IUIWindowManager
+function keyboard.setWindowManager(windowManager)
+    ctx = windowManager.input.keyboard
 
     keyboard.__index = ctx.storage
 end

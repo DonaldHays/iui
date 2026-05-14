@@ -76,9 +76,9 @@ function draw.newRootContext()
     }
 end
 
---- @param rootContext IUIRootContext
-function draw.setRootContext(rootContext)
-    ctx = rootContext.draw
+--- @param windowManager IUIWindowManager
+function draw.setWindowManager(windowManager)
+    ctx = windowManager.draw
 end
 
 function draw.beginFrame()

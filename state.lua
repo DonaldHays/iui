@@ -29,9 +29,9 @@ function state.newRootContext()
     return {}
 end
 
---- @param rootContext IUIRootContext
-function state.setRootContext(rootContext)
-    ctx = rootContext.state
+--- @param windowManager IUIWindowManager
+function state.setWindowManager(windowManager)
+    ctx = windowManager.state
 end
 
 function state.beginFrame()
