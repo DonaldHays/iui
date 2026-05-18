@@ -23,6 +23,9 @@ local cursors = {}
 --- @type IUIWindowManager
 local windowManager
 
+--- @type IUISet<IUIWindowManager>
+local processedWindowManagers
+
 local rootKeys = {
     disabledCount = true,
     hoverID = true,
@@ -61,6 +64,8 @@ function iui.load(backend, config)
     iui.backend = backend
     iui.graphics = iui.drawQueue
 
+    iui.input.load()
+
     iui.drawQueue.setBackend(backend.graphics)
 
     backend.load(iui)
@@ -78,7 +83,6 @@ end
 function iui.setWindowManager(newWindowManager)
     windowManager = newWindowManager
 
-    iui.input.setWindowManager(windowManager)
     iui.draw.setWindowManager(windowManager)
     iui.layer.setWindowManager(windowManager)
     iui.state.setWindowManager(windowManager)
@@ -87,6 +91,7 @@ end
 --- @param dt number
 function iui.beginFrame(dt)
     iui.dt = dt
+    processedWindowManagers = iui.set.new()
 
     iui.backend.beginFrame(dt)
 end
@@ -94,6 +99,17 @@ end
 --- @param width number
 --- @param height number
 function iui.beginWindow(width, height)
+    --- @type IUIWindowManager
+    local manager = iui.backend.getFullscreenWindowManager()
+
+    if processedWindowManagers:has(manager) then
+        error("window manager already processed this frame")
+    end
+    processedWindowManagers:put(manager)
+
+    iui.setWindowManager(manager)
+    windowManager:beginFrame()
+
     iui.layout.windowWidth = width
     iui.layout.windowHeight = height
     iui.draw.setWindowSize(width, height)
@@ -103,10 +119,13 @@ end
 
 function iui.endWindow()
     iui.layout.endPanel()
+
+    windowManager:endFrame()
 end
 
 function iui.endFrame()
     iui.backend.endFrame()
+    iui.input.endFrame()
 
     if currentCursor ~= iui.cursor then
         currentCursor = iui.cursor

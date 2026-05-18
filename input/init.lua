@@ -8,23 +8,19 @@ local iui = require(parentPath .. "iui")
 local input = require(currentPath .. "input")
 
 --- @class (exact) IUIInputRootContext
---- @field keyboard IUIKeyboardRootContext
---- @field mouse IUIMouseRootContext
 --- @field textBuffer string?
 --- @field isActive boolean
 
 --- @type IUIInputRootContext
 local ctx
 
---- @return IUIInputRootContext
-function input.newRootContext()
-    --- @type IUIInputRootContext
-    return {
-        keyboard = input.keyboard.newRootContext(),
-        mouse = input.mouse.newRootContext(),
+function input.load()
+    ctx = {
         textBuffer = nil,
         isActive = true,
     }
+
+    input.keyboard.load()
 end
 
 function input.text(s)
@@ -39,14 +35,6 @@ function input.text(s)
     else
         input.textBuffer = nil
     end
-end
-
---- @param windowManager IUIWindowManager
-function input.setWindowManager(windowManager)
-    ctx = windowManager.input
-
-    input.keyboard.setWindowManager(windowManager)
-    input.mouse.setWindowManager(windowManager)
 end
 
 function input.endFrame()

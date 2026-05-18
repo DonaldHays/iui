@@ -44,18 +44,11 @@ local keyboard = {
 }
 setmetatable(keyboard, keyboard)
 
---- @return IUIKeyboardRootContext
-function keyboard.newRootContext()
-    --- @type IUIKeyboardRootContext
-    return {
+function keyboard.load()
+    ctx = {
         storage = makeKeyboardState(),
         disabledStorage = makeKeyboardState()
     }
-end
-
---- @param windowManager IUIWindowManager
-function keyboard.setWindowManager(windowManager)
-    ctx = windowManager.input.keyboard
 
     keyboard.__index = ctx.storage
 end

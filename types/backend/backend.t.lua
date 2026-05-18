@@ -23,3 +23,7 @@ end
 
 function backend.endFrame()
 end
+
+--- @return IUIWindowManager
+function backend.getFullscreenWindowManager()
+end

@@ -4,7 +4,6 @@ local currentPath = (...):match('(.-)[^%./]+$')
 local iui = require(currentPath .. "iui")
 
 --- @class IUIWindowManager
---- @field input IUIInputRootContext
 --- @field draw IUIDrawRootContext
 --- @field layer IUILayerRootContext
 --- @field state IUIStateRootContext
@@ -20,7 +19,6 @@ IUIWindowManager.__index = IUIWindowManager
 function iui.newWindowManager()
     --- @type IUIWindowManager
     local manager = {
-        input = iui.input.newRootContext(),
         draw = iui.draw.newRootContext(),
         layer = iui.layer.newRootContext(),
         state = iui.state.newRootContext(),
@@ -58,7 +56,6 @@ function IUIWindowManager:endFrame()
         end
     end
 
-    iui.input.endFrame()
     iui.layout.endFrame()
     iui.draw.endFrame()
     iui.layer.endFrame()

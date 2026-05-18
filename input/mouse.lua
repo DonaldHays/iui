@@ -107,9 +107,9 @@ function mouse.newRootContext()
     }
 end
 
---- @param windowManager  IUIWindowManager
-function mouse.setWindowManager(windowManager)
-    ctx = windowManager.input.mouse
+--- @param rootContext IUIMouseRootContext
+function mouse.setRootContext(rootContext)
+    ctx = rootContext
 
     mouse.__index = ctx.storage
 end
