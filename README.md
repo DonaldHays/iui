@@ -1,6 +1,6 @@
 # IUI
 
-An immediate mode GUI library for LUA projects.
+An immediate mode GUI library for Lua projects.
 
 [Documentation](https://donaldhays.com/iui-docs/)
 
